@@ -183,8 +183,6 @@ class AdminController {
                 dailyCalculations,
                 rawDailyFoodDiaryLogs,
                 anthropometricStats,
-                UsageStats,
-                SignupStats,
                 totalAnthropometricCalculations,
                 totalUsers,
                 allUsers,
@@ -245,8 +243,6 @@ class AdminController {
                 getDailyCounts(AnthropometricCalculation, "timestamp"),
                 getDailyCounts(FoodDiary, "createdAt"),
                 getTimeFrameCounts(AnthropometricCalculation, "timestamp"),
-                getTimeFrameCounts(User, "createdAt"),
-                getTimeFrameCounts(User, "timestamp"),
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
                 User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId credits"),
@@ -266,6 +262,7 @@ class AdminController {
             ]);
 
             const { weeklyCalculations, monthlyCalculations, yearlyCalculations } = getAnalyticsBreakdown(dailyCalculations);
+            const { weeklySignupStat, monthlySignupStat, yearlySignupStat } = getAnalyticsBreakdown(dailyUsage);
             const { weeklyCalculations: weeklyFoodLogs, monthlyCalculations: monthlyFoodLogs, yearlyCalculations: yearlyFoodLogs } = getAnalyticsBreakdown(rawDailyFoodDiaryLogs);
             const newsletterSubscribers = await Newsletter.find()
                 .sort({ createdAt: -1 })
@@ -309,8 +306,6 @@ class AdminController {
                 yearlyCalculations,
 
                 anthropometricStats,
-                UsageStats,
-                SignupStats,
                 foodDiaryStats: {
                     daily: rawDailyFoodDiaryLogs.reverse(),
                     weekly: weeklyFoodLogs,
@@ -324,7 +319,10 @@ class AdminController {
                     trend: null
                 })),
                 newsletterSubscribers,
-                roleDistribution: categories
+                roleDistribution: categories,
+                weeklySignupStat,
+                yearlySignupStat,
+                monthlySignupStat
             });
 
         } catch (error) {
@@ -391,6 +389,66 @@ class AdminController {
             console.error("Error resetting credits:", error);
             res.status(500).json({
                 error: "Failed to reset credits. Please try again.",
+            });
+        }
+    }
+
+    async updateUserCredit(req, res) {
+        try {
+            const { email, credit } = req.body;
+
+            // Validate request body
+            if (!email || credit === undefined) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email and credit are required",
+                });
+            }
+
+            // Ensure credit is a number
+            const parsedCredit = Number(credit);
+            if (isNaN(parsedCredit) || parsedCredit < 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Credit must be a non-negative number",
+                });
+            }
+
+            // Find user by email
+            const user = await User.findOne({ email });
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+
+            // Check if verified
+            if (!user.isVerified) {
+                return res.status(403).json({
+                    success: false,
+                    message: "User is not verified",
+                });
+            }
+
+            // Update credits
+            user.credits = parsedCredit;
+            await user.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "User credit updated successfully",
+                user: {
+                    email: user.email,
+                    credits: user.credits,
+                },
+            });
+
+        } catch (error) {
+            console.error("Error updating user credit:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Server error while updating credit",
             });
         }
     }

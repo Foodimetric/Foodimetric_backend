@@ -11,6 +11,7 @@ router.post("/resend-otp", adminController.resendOtp);
 router.get("/messages", authenticateAdmin, adminController.getAllMessages);
 router.get('/dashboard/analytics', authenticateAdmin, adminController.getAnalytics);
 router.post('/dashboard/reset-credits', authenticateAdmin, adminController.creditVerifiedUsers);
+router.put("/update-credit", adminController.updateUserCredit)
 
 
 module.exports = router;
