@@ -1,0 +1,200 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Curious Kids Onboarding Service",
+      "description": "Curious Kids Onboarding Service",
+      "license": {
+        "name": "MIT"
+      }
+    },
+    "host": "https://ck-onboarding.onrender.com",
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "Student Sign in",
+        "description": "API for Signing Students into the system"
+      },
+      {
+        "name": "Student Sign up",
+        "description": "API for Signing Students Up in the system"
+      },
+      {
+        "name": "School Sign in",
+        "description": "API for Signing Students into the system"
+      },
+      {
+        "name": "School Sign up",
+        "description": "API for Signing Students Up in the system"
+      }
+    ],
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/student/sign-in": {
+        "parameters": [
+            {
+              "name": "Student Sign in",
+              "in": "body",
+              "description": "Details to Sign In",
+              "schema": {
+                "$ref": "#/definitions/Sign in Details"
+              }
+            }
+          ],
+          "post": {
+          "summary": "Signs Students in",
+          "tags": [
+            "Student Sign in"
+          ],
+          "responses": {
+            "200": {
+              "description": "Login Successful",
+              "schema": {
+                "$ref": "#/definitions/Response"
+              }
+            }
+          }
+        }
+      },
+      "/student/sign-up": {
+        "parameters": [
+            {
+              "name": "Student Sign up",
+              "in": "body",
+              "description": "Details to Sign up",
+              "schema": {
+                "$ref": "#/definitions/ ui gnUpDetails"
+              }
+            }
+          ],
+          "post": {
+          "summary": "Signs Students up",
+          "tags": [
+            "Student Sign up"
+          ],
+          "responses": {
+            "200": {
+              "description": "Signed in Successfully",
+              "schema": {
+                "$ref": "#/definitions/Response"
+              }
+            }
+          }
+        }
+      },
+      "/school/sign-in": {
+        "parameters": [
+            {
+              "name": "School Sign in",
+              "in": "body",
+              "description": "Details to Sign School In",
+              "schema": {
+                "$ref": "#/definitions/Sign in Details"
+              }
+            }
+          ],
+          "post": {
+          "summary": "Signs School in",
+          "tags": [
+            "School Sign in"
+          ],
+          "responses": {
+            "200": {
+              "description": "Login Successful",
+              "schema": {
+                "$ref": "#/definitions/Response"
+              }
+            }
+          }
+        }
+      },
+      "/school/sign-up": {
+        "parameters": [
+            {
+              "name": "School Sign up",
+              "in": "body",
+              "description": "Details to Sign School up",
+              "schema": {
+                "$ref": "#/definitions/School Signup Details"
+              }
+            }
+          ],
+          "post": {
+          "summary": "Signs School up",
+          "tags": [
+            "School Sign up"
+          ],
+          "responses": {
+            "200": {
+              "description": "Signed Up Successfully",
+              "schema": {
+                "$ref": "#/definitions/Response"
+              }
+            }
+          }
+        }
+      }
+  },
+  "definitions": {
+    "Response": {
+        "properties":{
+            "status":{
+                "type": "number"
+            },
+            "payload": {
+                "type": "object"
+            },
+            "message": {
+                "type": "string"
+            }
+        }
+    },
+    "Sign in Details": {
+        "properties":{
+            "email":{
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            }
+        }
+    },
+    "Sign up Details": {
+        "properties":{
+            "fullName": {
+                "type": "string"
+            },
+            "email":{
+                "type": "string"
+            },
+            "password": {
+                "type": "string"
+            },
+            "productKey": {
+                "type": "string"
+            }
+        }
+    },
+    "School Signup Details": {
+      "properties":{
+          "schoolName": {
+              "type": "string"
+          },
+          "email":{
+              "type": "string"
+          },
+          "password": {
+              "type": "string"
+          }
+      }
+  }
+  }
+}

@@ -6,6 +6,8 @@ require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
 const foodRoute = require("./src/routes/food-routes");
 const { addDataToDB } = require('./read_json');
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require('./swagger.json');
 
 const app = express();
 
@@ -15,6 +17,8 @@ app.use(
         origin: "*"
     })
 )
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //set port and db uri
 const port = process.env.PORT || 5010
