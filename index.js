@@ -22,10 +22,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //set port and db uri
 const port = process.env.PORT || 5010
-const uri = "mongodb://127.0.0.1:27017/food-metrics"
+const uri = process.env.DB_URI
 
 
-//local uri = process.env.DB_URI
+//local const uri = "mongodb://127.0.0.1:27017/food-metrics"
 // connect mongodb
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
