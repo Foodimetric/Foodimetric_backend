@@ -2,7 +2,7 @@ const fs = require("fs")
 const FoodRepository = require("./src/repositories/FoodRepository")
 
 const foodRepository =  new FoodRepository()
-const files = ["./data/output_1.json", "./data/output_2.json", "./data/output_4.json", "./data/output_5.json"]
+const files = ["./data/food.json"]
 
 const addDataToDB = ()=>{
     const totalData = []

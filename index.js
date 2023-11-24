@@ -40,7 +40,7 @@ app.use("/foods", foodRoute)
 
 app.get("/add-data", (req, res)=>{
     addDataToDB()
-    res.json("Done")
+    res.json("Done")    
 })
 
 //run server
