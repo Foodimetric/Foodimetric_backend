@@ -19,9 +19,9 @@ class FoodRepository {
         let foodList = []
         for(let i=0; i <= fileData.length-1; i++){
             let data = fileData[i]
-            if(data['FOOD NAME IN ENGLISH'] || data["FOOD NAME\nIN ENGLISH"]){    
+            if(data['FOOD NAME IN ENGLISH'] || data["FOOD NAME\nIN ENGLISH"] || data["EnglishName"]){    
                 const food = {}
-                food["foodName"] = data['FOOD NAME IN ENGLISH'] || data["FOOD NAME\nIN ENGLISH"];
+                food["foodName"] = data['FOOD NAME IN ENGLISH'] || data["FOOD NAME\nIN ENGLISH"] || data["EnglishName"];
                 food["details"] = data;
                 foodList.push(food)
             }
