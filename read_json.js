@@ -19,7 +19,8 @@ for(let i=0; i <= files.length - 1; i++){
         totalData.push(fileData[j])
     }
     console.log(totalData)
-    await foodRepository.addFood(fileData)
+    console.log(fileData)
+    // await foodRepository.addFood(fileData)
 })
 }
 }
