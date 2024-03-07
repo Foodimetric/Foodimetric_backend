@@ -57,6 +57,10 @@ class FoodRepository {
             payload: result
         }
     }
+
+    async clearDB(){
+        
+    }
 }
 
 module.exports = FoodRepository

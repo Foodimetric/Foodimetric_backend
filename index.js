@@ -8,6 +8,7 @@ const foodRoute = require("./src/routes/food-routes");
 const { addDataToDB } = require('./read_json');
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require('./swagger.json');
+const Food = require('./src/models/food.models');
 
 const app = express();
 
@@ -30,7 +31,19 @@ const uri = process.env.DB_URI
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const connection = mongoose.connection
-connection.once('open', ()=>{console.log('Database running Successfully')})
+connection.once('open', ()=>{
+    console.log('Database running Successfully')
+    // Food.deleteMany({})
+    //         .then(() => {
+    //             console.log('Database cleared');
+    //             mongoose.connection.close(); // Close the connection after clearing the database
+    //         })
+    //         .catch((err) => {
+    //             console.error('Error clearing database:', err);
+    //             mongoose.connection.close(); // Close the connection if there is an error
+    //         });
+}
+)
 
 app.use(bodyParser.json({limit:"30mb", extended: true}));
 app.use(bodyParser.urlencoded({limit:"30mb", extended: false}));
