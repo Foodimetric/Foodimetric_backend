@@ -61,6 +61,15 @@ class FoodRepository {
     async clearDB(){
         
     }
+
+    async getFoodByLocation(location){
+        let result = await this.Model.find({
+            location
+        })
+        return {
+            payload: result
+        }
+    }
 }
 
 module.exports = FoodRepository

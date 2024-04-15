@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 const foodModel = new Schema({
     foodName: {type: String, required: true},
-    details: {type: Object}
+    details: {type: Object},
+    location: stringify,
+    
 })
 
 const Food = mongoose.model("Food", foodModel);

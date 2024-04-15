@@ -32,6 +32,17 @@ class FoodController{
         }
     }
 
+    async filterByLocation(req, res){
+        try{
+            let {location} = req.params
+            const result = await foodRepository.getFoodByLocation(location)
+            certainRespondMessage(res, result.payload,  "Successful", 200)
+        }
+        catch(err){
+            res.json(err).status(err.status)
+        }
+    }
+
 }
 
 module.exports = {
