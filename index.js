@@ -7,8 +7,10 @@ const userRoute = require("./src/routes/user-routes");
 const foodRoute = require("./src/routes/food-routes");
 const { addDataToDB } = require('./read_json');
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require('./swagger.json');
+const swaggerJSDoc = require('swagger-jsdoc')
+
 const Food = require('./src/models/food.models');
+const User = require('./src/models/user.models');
 
 const app = express();
 
@@ -19,7 +21,33 @@ app.use(
     })
 )
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const options = {
+    definition: {
+      openapi: "3.1.0",
+      info: {
+        title: "Foodimetric API",
+        version: "0.1.0",
+        description:
+          "This is the docs for all APIs for Foodimetric",
+      },
+      servers: [
+        {
+          url: "https://foodimetric-api.onrender.com",
+        },
+      ],
+    },
+    apis: ["./src/docs/*.js"],
+  };
+  
+  const specs = swaggerJSDoc(options);
+  app.use(
+    "/api-docs",
+    swaggerUi.serve,
+    swaggerUi.setup(specs, { explorer: true,
+      customCssUrl:
+      "https://cdn.jsdelivr.net/npm/swagger-ui-themes@3.0.0/themes/3.x/theme-newspaper.css",
+    })
+  );
 
 //set port and db uri
 const port = process.env.PORT || 5010
@@ -31,7 +59,7 @@ const uri = process.env.DB_URI
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const connection = mongoose.connection
-connection.once('open', ()=>{
+connection.once('open', async ()=>{
     console.log('Database running Successfully')
     // Food.deleteMany({})
     //         .then(() => {

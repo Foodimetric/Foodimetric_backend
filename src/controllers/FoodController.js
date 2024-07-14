@@ -13,8 +13,8 @@ class FoodController{
 
     async getFoodByDetails(req, res){
         try{
-            const food = req.body;
-            const result = await foodRepository.getDetails(food.foodName)
+            const body = req.body;
+            const result = await foodRepository.getDetails(body.foodName)
             certainRespondMessage(res, result.payload,  "Successful", 200)
         }
         catch(err){
