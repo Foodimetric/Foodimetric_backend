@@ -9,5 +9,6 @@ route.post("/sign-up", userController.signUp)
 route.get("/logged-user", requireLogin, userController.getLoggedUser)
 route.get("/user/:id", userController.getUserById)
 route.patch("/update-profile", requireLogin, userController.updateProfile)
+route.get("/verify-user/:token", userController.verifyUser)
 
 module.exports = route

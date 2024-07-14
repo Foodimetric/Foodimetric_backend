@@ -60,6 +60,24 @@ class UserController{
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
+    async verifyUser(req, res){
+        try{
+            const {token} = req.params;
+            if(!token){
+                certainRespondMessage(res, null, "No Token Parsed", 400)
+            }
+            let result = await userRepository.verifyUser(token);
+            if(!result){
+                certainRespondMessage(res, null, "Invalid Token", 400)
+            }
+            certainRespondMessage(res, result.payload, result.message, 200)
+        }
+        catch(err){
+            certainRespondMessage(res, null, err.message, err.status)
+        }
+        
+    }
+
 }
 
 module.exports = {

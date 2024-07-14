@@ -6,6 +6,8 @@ const userModel = new Schema({
     password: {type: String, required: true},
     firstName: {type: String, required: false},
     lastName: {type: String, required: false},
+    category: {type: String, required: false},
+    isVerified: {type: Boolean, required: false, default: false},
 },
 {
     timestamps: true

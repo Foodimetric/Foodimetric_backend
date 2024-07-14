@@ -26,7 +26,7 @@ const port = process.env.PORT || 5010
 const uri = process.env.DB_URI
 
 
-//local const uri = "mongodb://127.0.0.1:27017/food-metrics"
+//local const uri = 
 // connect mongodb
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
