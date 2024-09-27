@@ -68,7 +68,7 @@ const registerHtml = (token) => {
             </div>
             <div class="content">
                 <p>Thank you for signing up. We are excited to have you on board. To complete your registration, please verify your email address by clicking the link below:</p>
-                <a href="${process.env.URL}/users/verify-user/${token}" class="button">Verify Your Account</a>
+                <a href="https://foodimetric.com/verify?token=${token}" class="button">Verify Your Account</a>
                 <p>If you did not sign up for an account, please disregard this email.</p>
                 <p>Feel free to explore and let us know if you have any questions or need assistance.</p>
             </div>
