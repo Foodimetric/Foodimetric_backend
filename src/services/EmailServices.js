@@ -83,10 +83,10 @@ const registerHtml = (token) => {
 
 
 class EmailService {
-  async mail(receiver, sender, subject, html) {
+  async mail(receiver, sender, subject, html, token) {
     let transporter = nodemailer.createTransport({
       service: "gmail",
-      host: "smtp.zoho.com",
+      host: "smtp.gmail.com",
       port: 465,
       secure: true,
       auth: {
@@ -99,8 +99,10 @@ class EmailService {
       from: `${sender} <${process.env.EMAIL_ADDRESS}>`,
       to: receiver,
       subject: subject,
+      text: `Welcome to Foodimetric! Please verify your account using the following link: https://foodimetric.com/verify?token=${token}`,
       html: html,
     };
+    
 
     try {
       let info = await transporter.sendMail(mailOptions);
@@ -115,7 +117,8 @@ class EmailService {
       email,
       "Folake",
       "Welcome to Foodimetric! Please Verify Your Account",
-      registerHtml(token)
+      registerHtml(token),
+      token
     );
   }
 }
