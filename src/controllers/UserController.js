@@ -38,6 +38,7 @@ class UserController{
     async signUp(req, res){
         const content = req.body
         console.log(content)
+        content.category = content.category || 0;
         let result = await userRepository.signUp(content)
         console.log(result)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)

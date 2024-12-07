@@ -67,6 +67,7 @@ class UserRepository {
       if (!resp) {
         let hashedPassword = await bcrypt.hash(password, 8);
         userDetails.password = hashedPassword;
+        userDetails.category = userDetails.category || 0; 
         const newUser = new this.Model(userDetails);
         let user = await newUser.save();
         const token = jwt.sign({ _id: user._id }, jwt_secret);
