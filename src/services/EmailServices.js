@@ -115,7 +115,7 @@ class EmailService {
   async sendSignUpDetails(email, token) {
     await this.mail(
       email,
-      "Folake",
+      "Foodimetric",
       "Welcome to Foodimetric! Please Verify Your Account",
       registerHtml(token),
       token
