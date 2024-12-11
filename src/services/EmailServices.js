@@ -13,51 +13,67 @@ const registerHtml = (token) => {
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Welcome to Foodimetric!</title>
+        <title>Verify Your Email - Foodimetric</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
+                background-color: #f9f9f9;
                 margin: 0;
                 padding: 0;
+                line-height: 1.6;
+                color: #333333;
             }
             .container {
-                width: 100%;
                 max-width: 600px;
-                margin: 0 auto;
-                background-color: #ffffff;
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                margin: 20px auto;
+                background: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
             }
             .header {
-                text-align: center;
-                padding: 10px 0;
                 background-color: #007bff;
                 color: #ffffff;
+                text-align: center;
+                padding: 20px;
+            }
+            .header h1 {
+                margin: 0;
+                font-size: 24px;
             }
             .content {
-                margin: 20px 0;
+                padding: 20px;
+                text-align: center;
+            }
+            .content p {
+                margin: 15px 0;
             }
             .button {
-                display: block;
-                width: 200px;
-                margin: 0 auto;
-                padding: 10px;
-                text-align: center;
+                display: inline-block;
                 background-color: #007bff;
                 color: #ffffff;
                 text-decoration: none;
+                padding: 12px 20px;
+                font-size: 16px;
                 border-radius: 5px;
-            }
-            .footer {
-                text-align: center;
-                font-size: 12px;
-                color: #888888;
                 margin-top: 20px;
             }
-
-            a{
-              color: #fff
+            .button:hover {
+                background-color: #0056b3;
+            }
+            .footer {
+                background-color: #f1f1f1;
+                padding: 15px;
+                text-align: center;
+                font-size: 14px;
+                color: #666666;
+            }
+            .footer a {
+                color: #007bff;
+                text-decoration: none;
+            }
+            .footer a:hover {
+                text-decoration: underline;
             }
         </style>
     </head>
@@ -67,10 +83,16 @@ const registerHtml = (token) => {
                 <h1>Welcome to Foodimetric!</h1>
             </div>
             <div class="content">
-                <p>Thank you for signing up. We are excited to have you on board. To complete your registration, please verify your email address by clicking the link below:</p>
-                <a href="https://foodimetric.com/verify?token=${token}" class="button">Verify Your Account</a>
-                <p>If you did not sign up for an account, please disregard this email.</p>
-                <p>Feel free to explore and let us know if you have any questions or need assistance.</p>
+                <p>Hi there,</p>
+                <p>Thank you for signing up with Foodimetric! We're thrilled to have you on board. Please confirm your email address to activate your account.</p>
+                <a href="https://foodimetric.com/verify?token=${token}" class="button">Verify Your Email</a>
+                <p>If you didn't create this account, you can safely ignore this email.</p>
+                <p>Need help? Reach out to us anytime using the details below:</p>
+                <p>
+                    <strong>Email:</strong> <a href="mailto:foodimetric@gmail.com">foodimetric@gmail.com</a><br>
+                    <strong>WhatsApp:</strong> <a href="https://wa.me/2347085056806">+234 708 505 6806</a><br>
+                    <strong>Instagram:</strong> <a href="https://www.instagram.com/p/CzYXNuTIhqx/?igshid=NTc4MTIwNjQ2YQ==" target="_blank">Follow us on Instagram</a>
+                </p>
             </div>
             <div class="footer">
                 <p>Best regards,<br>The Foodimetric Team</p>
@@ -102,7 +124,7 @@ class EmailService {
       text: `Welcome to Foodimetric! Please verify your account using the following link: https://foodimetric.com/verify?token=${token}`,
       html: html,
     };
-    
+
 
     try {
       let info = await transporter.sendMail(mailOptions);
