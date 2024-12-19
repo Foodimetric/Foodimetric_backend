@@ -16,7 +16,7 @@ route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe
 route.delete("/users/delete", requireLogin, (req, res) => userController.deleteAccount(req, res));
 route.get(
     "/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
+    passport.authenticate("google", { scope: ["profile", "email"] }) 
 );
 
 // Callback route for Google to redirect to
