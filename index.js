@@ -79,8 +79,8 @@ app.use(bodyParser.urlencoded({limit:"30mb", extended: false}));
 
 app.use("/users", userRoute)
 app.use("/foods", foodRoute)
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.get("/add-data", (req, res)=>{
     addDataToDB()
     res.json("Done")    
