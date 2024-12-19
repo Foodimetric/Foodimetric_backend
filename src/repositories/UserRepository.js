@@ -114,6 +114,21 @@ class UserRepository {
       payload: user,
     };
   }
+  async getAllUserEmails() {
+    try {
+        const emails = await this.Model.find({}, "email"); // Fetch only the email field
+        return {
+            payload: emails,
+            responseStatus: 200,
+        };
+    } catch (err) {
+        return {
+            message: err.message,
+            responseStatus: 500,
+        };
+    }
+}
+
 }
 
 module.exports = UserRepository;

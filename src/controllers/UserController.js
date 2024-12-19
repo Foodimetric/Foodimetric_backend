@@ -79,6 +79,16 @@ class UserController{
         
     }
 
+    async getAllUserEmails(req, res) {
+        try {
+            let result = await userRepository.getAllUserEmails();
+            certainRespondMessage(res, result.payload, result.message, result.responseStatus);
+        } catch (err) {
+            certainRespondMessage(res, null, "Error fetching user emails", 500);
+        }
+    }
+    
+
 }
 
 module.exports = {
