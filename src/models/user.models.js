@@ -6,6 +6,7 @@ const userModel = new Schema({
     password: {type: String, required: true},
     firstName: {type: String, required: false},
     lastName: {type: String, required: false},
+    googleId: { type: String, unique: true, default: null}, // For Google users
     category: { 
         type: Number, 
         enum: [0, 1], // Restricts values to 0 or 1

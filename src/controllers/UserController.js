@@ -86,9 +86,49 @@ class UserController{
         } catch (err) {
             certainRespondMessage(res, null, "Error fetching user emails", 500);
         }
-    }
+    }  
     
+    async deleteAccount(req, res) {
+        const userId = req.user._id; // Assuming `req.user` is populated with the authenticated user's details
+    
+        try {
+            const result = await userRepository.deleteUserById(userId);
+            certainRespondMessage(res, null, result.message, result.responseStatus);
+        } catch (err) {
+            certainRespondMessage(res, null, "Error deleting account", 500);
+        }
+    }
 
+    async signUpWithGoogle(profile) {
+        const { id, displayName, emails } = profile; // Google profile details
+    
+        try {
+            // Check if user already exists
+            let user = await User.findOne({ googleId: id });
+    
+            if (!user) {
+                user = new User({
+                    email: emails[0].value,
+                    googleId: id,
+                    firstName: displayName.split(" ")[0] || "", // Extract first name
+                    lastName: displayName.split(" ")[1] || "", // Extract last name (if available)
+                    password: null, // No password for Google users
+                    category: 0, // Default category
+                    isVerified: true, // Mark Google users as verified
+                });
+    
+                user = await user.save(); // Save the new user
+            }
+    
+            return {
+                message: "Google Sign-Up Successful",
+                payload: user,
+            };
+        } catch (error) {
+            throw new Error("Error during Google Sign-Up: " + error.message);
+        }
+    }    
+    
 }
 
 module.exports = {

@@ -11,6 +11,7 @@ const swaggerJSDoc = require('swagger-jsdoc')
 
 const Food = require('./src/models/food.models');
 const User = require('./src/models/user.models');
+const passport = require("./src/config/passport");
 
 const app = express();
 
@@ -32,7 +33,7 @@ const options = {
       },
       servers: [
         {
-          url: "https://foodimetric-api.onrender.com",
+          url: "https://foodimetric-backend.onrender.com",
         },
       ],
     },
@@ -78,7 +79,8 @@ app.use(bodyParser.urlencoded({limit:"30mb", extended: false}));
 
 app.use("/users", userRoute)
 app.use("/foods", foodRoute)
-
+app.use(passport.initialize());
+app.use(passport.session());
 app.get("/add-data", (req, res)=>{
     addDataToDB()
     res.json("Done")    

@@ -67,7 +67,7 @@ class UserRepository {
       if (!resp) {
         let hashedPassword = await bcrypt.hash(password, 8);
         userDetails.password = hashedPassword;
-        userDetails.category = userDetails.category || 0; 
+        userDetails.category = userDetails.category || 0;
         const newUser = new this.Model(userDetails);
         let user = await newUser.save();
         const token = jwt.sign({ _id: user._id }, jwt_secret);
@@ -116,18 +116,39 @@ class UserRepository {
   }
   async getAllUserEmails() {
     try {
-        const emails = await this.Model.find({}, "email"); // Fetch only the email field
-        return {
-            payload: emails,
-            responseStatus: 200,
-        };
+      const emails = await this.Model.find({}, "email"); // Fetch only the email field
+      return {
+        payload: emails,
+        responseStatus: 200,
+      };
     } catch (err) {
-        return {
-            message: err.message,
-            responseStatus: 500,
-        };
+      return {
+        message: err.message,
+        responseStatus: 500,
+      };
     }
-}
+  }
+  async deleteUserById(userId) {
+    try {
+      const result = await this.Model.findByIdAndDelete(userId);
+      if (!result) {
+        return {
+          message: "User not found",
+          responseStatus: 404,
+        };
+      }
+
+      return {
+        message: "User account deleted successfully",
+        responseStatus: 200,
+      };
+    } catch (err) {
+      return {
+        message: err.message,
+        responseStatus: 500,
+      };
+    }
+  }
 
 }
 
