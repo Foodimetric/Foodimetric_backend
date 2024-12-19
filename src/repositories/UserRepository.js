@@ -117,6 +117,7 @@ class UserRepository {
   async getAllUserEmails() {
     try {
       const emails = await this.Model.find({}, "email"); // Fetch only the email field
+      console.log("emails", emails);
       return {
         payload: emails,
         responseStatus: 200,
