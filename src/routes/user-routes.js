@@ -11,7 +11,7 @@ route.get("/logged-user", requireLogin, userController.getLoggedUser)
 route.get("/user/:id", userController.getUserById)
 route.patch("/update-profile", requireLogin, userController.updateProfile)
 route.get("/verify-user/:token", userController.verifyUser)
-route.get("/users/emails", (req, res) => userController.getAllUserEmails);
+route.get("/users/emails", userController.getAllUserEmails);
 route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe(req, res));
 route.delete("/users/delete", requireLogin, (req, res) => userController.deleteAccount(req, res));
 route.get(
