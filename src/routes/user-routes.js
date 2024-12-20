@@ -37,4 +37,9 @@ route.get(
         }
     }
 );
+route.post("/forgot-password", (req, res) => userController.forgotPassword(req, res));
+
+// Reset Password
+route.post("/reset-password", (req, res) => userController.resetPassword(req, res))
+
 module.exports = route

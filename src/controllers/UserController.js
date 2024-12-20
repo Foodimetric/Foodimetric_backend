@@ -3,13 +3,13 @@ const UserRepository = require("../repositories/UserRepository");
 const { certainRespondMessage } = require("../utils/response");
 
 
-const getUser = async (id, res)=>{
-    try{
+const getUser = async (id, res) => {
+    try {
         let result = await userRepository.getUserById(id)
-        if(result.payload){
+        if (result.payload) {
             certainRespondMessage(res, result.payload, result.message, result.responseStatus)
         }
-        else{
+        else {
             result = {
                 message: "User not found",
                 responseStatus: 404
@@ -17,7 +17,7 @@ const getUser = async (id, res)=>{
             certainRespondMessage(res, result.payload, result.message, result.responseStatus)
         }
     }
-    catch(err){
+    catch (err) {
         let result = {
             message: "User not found",
             responseStatus: 404
@@ -27,15 +27,15 @@ const getUser = async (id, res)=>{
 }
 
 const userRepository = new UserRepository()
-class UserController{
-  
-    async signIn(req, res){
-        const {email, password} = req.body
-        console.log({email, password})
+class UserController {
+
+    async signIn(req, res) {
+        const { email, password } = req.body
+        console.log({ email, password })
         let result = await userRepository.signIn(email, password)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
-    async signUp(req, res){
+    async signUp(req, res) {
         const content = req.body
         console.log(content)
         content.category = content.category || 0;
@@ -44,39 +44,39 @@ class UserController{
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
-    async getUserById(req, res){
-        const {id} = req.params;
+    async getUserById(req, res) {
+        const { id } = req.params;
         getUser(id, res)
     }
 
-    async getLoggedUser(req, res){
+    async getLoggedUser(req, res) {
         const id = req.user._id
         getUser(id, res)
     }
 
-    async updateProfile(req, res){
+    async updateProfile(req, res) {
         const update = req.body;
         const user = req.user
         let result = await userRepository.editProfile(update, user)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
-    async verifyUser(req, res){
-        try{
-            const {token} = req.params;
-            if(!token){
+    async verifyUser(req, res) {
+        try {
+            const { token } = req.params;
+            if (!token) {
                 certainRespondMessage(res, null, "No Token Parsed", 400)
             }
             let result = await userRepository.verifyUser(token);
-            if(!result){
+            if (!result) {
                 certainRespondMessage(res, null, "Invalid Token", 400)
             }
             certainRespondMessage(res, result.payload, result.message, 200)
         }
-        catch(err){
+        catch (err) {
             certainRespondMessage(res, null, err.message, err.status)
         }
-        
+
     }
 
     async getAllUserEmails(req, res) {
@@ -86,11 +86,11 @@ class UserController{
         } catch (err) {
             certainRespondMessage(res, null, "Error fetching user emails", 500);
         }
-    }  
-    
+    }
+
     async deleteAccount(req, res) {
         const userId = req.user._id; // Assuming `req.user` is populated with the authenticated user's details
-    
+
         try {
             const result = await userRepository.deleteUserById(userId);
             certainRespondMessage(res, null, result.message, result.responseStatus);
@@ -101,11 +101,11 @@ class UserController{
 
     async signUpWithGoogle(profile) {
         const { id, displayName, emails } = profile; // Google profile details
-    
+
         try {
             // Check if user already exists
             let user = await User.findOne({ googleId: id });
-    
+
             if (!user) {
                 user = new User({
                     email: emails[0].value,
@@ -116,10 +116,10 @@ class UserController{
                     category: 0, // Default category
                     isVerified: true, // Mark Google users as verified
                 });
-    
+
                 user = await user.save(); // Save the new user
             }
-    
+
             return {
                 message: "Google Sign-Up Successful",
                 payload: user,
@@ -127,9 +127,51 @@ class UserController{
         } catch (error) {
             throw new Error("Error during Google Sign-Up: " + error.message);
         }
-    }    
-    
+    }
+
+    async forgotPassword(req, res) {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                return certainRespondMessage(res, null, "Email is required", 400);
+            }
+
+            const user = await userRepository.getUserByEmail(email);
+            if (!user) {
+                return certainRespondMessage(res, null, "User not found", 404);
+            }
+
+            // For future enhancement: You can add email sending logic here.
+
+            return certainRespondMessage(res, null, "User found", 200);
+        } catch (error) {
+            return certainRespondMessage(res, null, "Internal Server Error", 500);
+        }
+    }
+
+    // Reset Password
+    async resetPassword(req, res) {
+        try {
+            const { email, newPassword } = req.body;
+
+            if (!email || !newPassword) {
+                return certainRespondMessage(res, null, "Email and new password are required", 400);
+            }
+
+            const result = await userRepository.updatePassword(email, newPassword);
+            if (!result) {
+                return certainRespondMessage(res, null, "User not found", 404);
+            }
+
+            return certainRespondMessage(res, null, "Password updated successfully", 200);
+        } catch (error) {
+            return certainRespondMessage(res, null, "Internal Server Error", 500);
+        }
+    }
 }
+
+    
+
 
 module.exports = {
     UserController

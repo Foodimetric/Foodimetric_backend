@@ -150,6 +150,25 @@ class UserRepository {
       };
     }
   }
+  
+  async getUserByEmail(email) {
+    return await this.Model.findOne({ email });
+  }
+
+  // Update password
+  async updatePassword(email, newPassword) {
+    const user = await this.getUserByEmail(email);
+    if (!user) return null;
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password in the database
+    user.password = hashedPassword;
+    await user.save();
+    return user;
+  }
 
 }
 
