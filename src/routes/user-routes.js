@@ -1,9 +1,11 @@
 const { UserController } = require("../controllers/UserController");
+const {NewsletterController} = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
 const passport = require("passport");
 
 const route = require("express").Router();
 const userController = new UserController()
+const newsletterController = new NewsletterController()
 
 route.post("/sign-in", userController.signIn)
 route.post("/sign-up", userController.signUp)
