@@ -131,6 +131,7 @@ class UserController {
 
     async forgotPassword(req, res) {
         try {
+            console.log('Request body:', req.body);
             const { email } = req.body;
             if (!email) {
                 return certainRespondMessage(res, null, "Email is required", 400);
