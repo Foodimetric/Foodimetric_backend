@@ -1,4 +1,4 @@
-const Newsletter = require("../models/newsletter-subscription.models");
+const Newsletter = require("../models/newsletter-subscription.model");
 
 class NewsletterRepository {
     constructor() {
