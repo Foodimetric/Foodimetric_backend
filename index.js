@@ -62,15 +62,6 @@ mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 const connection = mongoose.connection
 connection.once('open', async ()=>{
     console.log('Database running Successfully')
-    // Food.deleteMany({})
-    //         .then(() => {
-    //             console.log('Database cleared');
-    //             mongoose.connection.close(); // Close the connection after clearing the database
-    //         })
-    //         .catch((err) => {
-    //             console.error('Error clearing database:', err);
-    //             mongoose.connection.close(); // Close the connection if there is an error
-    //         });
 }
 )
 
