@@ -6,6 +6,7 @@ require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
 const foodRoute = require("./src/routes/food-routes");
 const { addDataToDB } = require('./read_json');
+const { addWestAfricaFoodDataToDB } = require('./west_json');
 const swaggerUi = require("swagger-ui-express");
 const swaggerJSDoc = require('swagger-jsdoc')
 
@@ -75,6 +76,11 @@ app.use("/foods", foodRoute)
 app.get("/add-data", (req, res)=>{
     addDataToDB()
     res.json("Done")    
+})
+
+app.get("/add-west", (req, res)=>{
+  addWestAfricaFoodDataToDB()
+  res.json("Done")    
 })
 
 //run server
