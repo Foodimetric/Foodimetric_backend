@@ -28,4 +28,4 @@ class AnthroRepository {
     }
 }
 
-module.exports = new AnthroRepository();
+module.exports = AnthroRepository;
