@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
 const foodRoute = require("./src/routes/food-routes");
+const calculationsRoutes = require("./src/routes/calculation");
 const { addDataToDB } = require('./read_json');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
 const swaggerUi = require("swagger-ui-express");
@@ -71,6 +72,7 @@ app.use(bodyParser.urlencoded({limit:"30mb", extended: false}));
 
 app.use("/users", userRoute)
 app.use("/foods", foodRoute)
+app.use('/calculations', calculationsRoutes);
 // app.use(passport.initialize());
 // app.use(passport.session());
 app.get("/add-data", (req, res)=>{
