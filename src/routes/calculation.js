@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { CalculationsController } = require('../controllers/CalculationController');
+const { CalculationController } = require('../controllers/CalculationController');
 
-const calculationsController = new CalculationsController();
+const calculationsController = new CalculationController();
 
 router.post('/', calculationsController.saveCalculation.bind(calculationsController));
 router.get('/user/:userId', calculationsController.getUserCalculations.bind(calculationsController));
