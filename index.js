@@ -80,10 +80,10 @@ app.get("/add-data", (req, res)=>{
     res.json("Done")    
 })
 
-app.get("/add-west", (req, res)=>{
-  addWestAfricaFoodDataToDB()
-  res.json("Done")    
-})
+// app.get("/add-west", (req, res)=>{
+//   addWestAfricaFoodDataToDB()
+//   res.json("Done")    
+// })
 
 //run server
 app.listen(port, ()=>{
