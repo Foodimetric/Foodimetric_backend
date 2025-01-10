@@ -14,6 +14,7 @@ const userModel = new Schema({
         default: 0    // Optional: sets default value to 0 if not provided
     },
     isVerified: {type: Boolean, required: false, default: false},
+    location: { type: String, required: false },  // New location field
 },
 {
     timestamps: true
