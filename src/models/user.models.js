@@ -9,7 +9,7 @@ const userModel = new Schema({
     googleId: { type: String, unique: true, default: null}, // For Google users
     category: { 
         type: Number, 
-        enum: [0, 1], // Restricts values to 0 or 1
+        enum: [0, 1, 2, 3, 4, 5], // Restricts values to 0 or 1
         required: false, // Ensures category must be provided
         default: 0    // Optional: sets default value to 0 if not provided
     },
