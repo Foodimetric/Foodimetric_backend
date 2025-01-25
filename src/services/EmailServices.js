@@ -91,7 +91,7 @@ const registerHtml = (token) => {
                 <p>
                     <strong>Email:</strong> <a href="mailto:foodimetric@gmail.com">foodimetric@gmail.com</a><br>
                     <strong>WhatsApp:</strong> <a href="https://wa.me/2347085056806">+234 708 505 6806</a><br>
-                    <strong>Instagram:</strong> <a href="https://www.instagram.com/p/CzYXNuTIhqx/?igshid=NTc4MTIwNjQ2YQ==" target="_blank">Follow us on Instagram</a>
+                    <strong>Instagram:</strong> <a href="https://www.instagram.com/foodimetric/" target="_blank">Follow us on Instagram</a>
                 </p>
             </div>
             <div class="footer">
