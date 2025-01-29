@@ -186,6 +186,13 @@ class UserController {
                 { $sort: { count: -1 } }, // Sort by count in descending order
                 { $limit: 1 } // Get the top result
             ]);
+
+            // Generate calculation breakdown for the pie chart (example)
+            const calculationBreakdown = await Anthro.aggregate([
+                { $match: { user_id: req.user._id } }, // Filter by user_id
+                { $group: { _id: "$calculator_name", count: { $sum: 1 } } }, // Group by calculator_name
+            ]);
+
             const user = await User.findById(req.user._id, "usage lastUsageDate");
 
             res.status(200).json({
@@ -195,6 +202,7 @@ class UserController {
                     totalCalculations,
                     mostUsedCalculator: mostUsedCalculator.length > 0 ? mostUsedCalculator[0]._id : 0,
                     platformUsage: user.usage || 0,
+                    calculationBreakdown: calculationBreakdown,
                 }
             });
         } catch (error) {
