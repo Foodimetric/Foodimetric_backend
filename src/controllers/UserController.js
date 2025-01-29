@@ -59,6 +59,11 @@ class UserController {
     async updateProfile(req, res) {
         const update = req.body;
         const user = req.user
+
+        if (req.file) {
+            // If the profile picture exists in the request, update the profile with the image URL
+            update.profilePicture = req.file.path; 
+        }
         let result = await userRepository.editProfile(update, user)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }

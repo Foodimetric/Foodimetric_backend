@@ -2,6 +2,8 @@ const { UserController } = require("../controllers/UserController");
 const {NewsletterController} = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
 const passport = require("passport");
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const route = require("express").Router();
 const userController = new UserController()
@@ -13,7 +15,7 @@ route.get("/logged-user", requireLogin, userController.getLoggedUser)
 route.get("/platform/analytics", requireLogin, userController.getUserAnalytics)
 route.post("/analytics", requireLogin, userController.saveAnalytics)
 route.get("/user/:id", userController.getUserById)
-route.patch("/update-profile", requireLogin, userController.updateProfile)
+route.patch("/update-profile", upload.single('profilePicture'), requireLogin, userController.updateProfile)
 route.get("/verify-user/:token", userController.verifyUser)
 route.get("/users/emails", userController.getAllUserEmails);
 route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe(req, res));
