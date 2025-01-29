@@ -1,4 +1,6 @@
 const User = require("../models/user.models")
+const Anthro = require("../models/anthropometric")
+const Diary = require("../models/diary.model")
 const UserRepository = require("../repositories/UserRepository");
 const { certainRespondMessage } = require("../utils/response");
 
@@ -169,9 +171,74 @@ class UserController {
             return certainRespondMessage(res, null, "Internal Server Error", 500);
         }
     }
+
+    async getUserAnalytics(req, res) {
+        try {
+            // Count total food logs in the Diary collection
+            const foodLogCount = await Diary.countDocuments();
+
+            // Count total anthropometric calculations in the Anthro collection
+            const totalCalculations = await Anthro.countDocuments();
+
+            // Find the most used anthropometric calculator
+            const mostUsedCalculator = await Anthro.aggregate([
+                { $group: { _id: "$calculatorName", count: { $sum: 1 } } }, // Group by calculatorName and count
+                { $sort: { count: -1 } }, // Sort by count in descending order
+                { $limit: 1 } // Get the top result
+            ]);
+
+            const user = await User.findById(req.user._id, "usage lastUsageDate");
+
+            res.status(200).json({
+                message: "Analytics fetched successfully",
+                data: {
+                    totalFoodLogs: foodLogCount,
+                    totalCalculations,
+                    mostUsedCalculator: mostUsedCalculator.length > 0 ? mostUsedCalculator[0]._id : 0,
+                    platformUsage: user.usage || 0,
+                }
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: "Error fetching analytics",
+                error: error.message,
+            });
+        }
+    }
+
+    async saveAnalytics(req, res) {
+        try {
+            const userId = req.user._id;
+
+            // Fetch the user's analytics data
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            const today = new Date();
+            const lastUsageDate = user.lastUsageDate;
+
+            if (lastUsageDate && new Date(lastUsageDate).toDateString() === today.toDateString()) {
+                return res.status(200).json({ message: "Platform usage already recorded for today." });
+            }
+    
+            // Increment usage and update lastUsageDate
+            user.usage += 1;
+            user.lastUsageDate = today;
+    
+            await user.save();
+    
+            res.status(200).json({ message: "Platform usage updated successfully." });
+        } catch (error) {
+            res.status(500).json({ message: "Error updating platform usage.", error: error.message });
+        }
+    }
+
 }
 
-    
+
 
 
 module.exports = {

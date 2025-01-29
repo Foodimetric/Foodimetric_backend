@@ -14,6 +14,8 @@ const userModel = new Schema({
         default: 0    // Optional: sets default value to 0 if not provided
     },
     isVerified: {type: Boolean, required: false, default: false},
+    usage: { type: Number, default: 0 },
+    lastUsageDate: { type: Date, default: null },
     location: { type: String, required: false },  // New location field
 },
 {
