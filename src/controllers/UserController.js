@@ -182,7 +182,7 @@ class UserController {
 
             // Find the most used anthropometric calculator
             const mostUsedCalculator = await Anthro.aggregate([
-                { $group: { _id: "$calculatorName", count: { $sum: 1 } } }, // Group by calculatorName and count
+                { $group: { _id: "$calculator_name", count: { $sum: 1 } } }, // Group by calculatorName and count
                 { $sort: { count: -1 } }, // Sort by count in descending order
                 { $limit: 1 } // Get the top result
             ]);
