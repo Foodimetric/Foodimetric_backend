@@ -174,19 +174,18 @@ class UserController {
 
     async getUserAnalytics(req, res) {
         try {
-            // Count total food logs in the Diary collection
-            const foodLogCount = await Diary.countDocuments();
+            const foodLogCount = await Diary.countDocuments({ user_id: req.user._id });
 
-            // Count total anthropometric calculations in the Anthro collection
-            const totalCalculations = await Anthro.countDocuments();
+            // Count total anthropometric calculations in the Anthro collection for the specific user
+            const totalCalculations = await Anthro.countDocuments({ user_id: req.user._id });
 
-            // Find the most used anthropometric calculator
+            // Find the most used anthropometric calculator for the specific user
             const mostUsedCalculator = await Anthro.aggregate([
-                { $group: { _id: "$calculator_name", count: { $sum: 1 } } }, // Group by calculatorName and count
+                { $match: { user_id: req.user._id } }, // Filter by user_id
+                { $group: { _id: "$calculator_name", count: { $sum: 1 } } }, // Group by calculator_name and count
                 { $sort: { count: -1 } }, // Sort by count in descending order
                 { $limit: 1 } // Get the top result
             ]);
-
             const user = await User.findById(req.user._id, "usage lastUsageDate");
 
             res.status(200).json({
@@ -223,13 +222,13 @@ class UserController {
             if (lastUsageDate && new Date(lastUsageDate).toDateString() === today.toDateString()) {
                 return res.status(200).json({ message: "Platform usage already recorded for today." });
             }
-    
+
             // Increment usage and update lastUsageDate
             user.usage += 1;
             user.lastUsageDate = today;
-    
+
             await user.save();
-    
+
             res.status(200).json({ message: "Platform usage updated successfully." });
         } catch (error) {
             res.status(500).json({ message: "Error updating platform usage.", error: error.message });
