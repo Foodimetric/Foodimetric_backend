@@ -3,12 +3,33 @@ const {NewsletterController} = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
 const passport = require("passport");
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
 
 const route = require("express").Router();
 const userController = new UserController()
 const newsletterController = new NewsletterController()
 
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "uploads/"); // Store images in 'uploads' folder
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname)); // Unique filename
+    },
+});
+
+// Set file filter to accept only images
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only image files are allowed"), false);
+    }
+};
+
+
+// const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage, fileFilter });
 route.post("/sign-in", userController.signIn)
 route.post("/sign-up", userController.signUp)
 route.get("/logged-user", requireLogin, userController.getLoggedUser)

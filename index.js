@@ -24,7 +24,8 @@ app.use(
         origin: "*"
     })
 )
-
+// app.use(express.urlencoded({ extended: true })); 
+app.use("/uploads", express.static("uploads"));
 const options = {
     definition: {
       openapi: "3.1.0",
@@ -69,7 +70,7 @@ connection.once('open', async ()=>{
 )
 
 app.use(bodyParser.json({limit:"30mb", extended: true}));
-app.use(bodyParser.urlencoded({limit:"30mb", extended: false}));
+app.use(bodyParser.urlencoded({limit:"30mb", extended: true}));
 
 app.use("/users", userRoute)
 app.use("/foods", foodRoute)
