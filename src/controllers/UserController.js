@@ -64,7 +64,7 @@ class UserController {
         if (req.file) {
             console.log('who called ');
             // If the profile picture exists in the request, update the profile with the image URL
-            update.profilePicture = req.file.path;
+            update.profilePicture = `/uploads/${req.file.filename}`;
         }
         console.log('oops ');
         let result = await userRepository.editProfile(update, user)
