@@ -5,7 +5,9 @@ const westAfricaFoodRepository = new WestAfricaFoodRepository();
 const files = ["./data/west_africa_food.json"];
 
 const addWestAfricaFoodDataToDB = () => {
+    console.log("Script is starting...");
     files.forEach(file => {
+        console.log(`Reading file: ${file}`);
         fs.readFile(file, "utf-8", async (err, data) => {
             if (err) {
                 console.error(`Error reading file ${file}:, err.message`);
