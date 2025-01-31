@@ -34,7 +34,7 @@ const upload = multer({
     fileFilter,
     limits: {
         fileSize: 5 * 1024 * 1024, // Max file size: 5MB
-        fieldSize: 1024 * 10, // Limit text field size to 10KB
+        fieldSize: 1024 * 1024, // Limit text field size to 10KB
         fields: 10, // Limit number of fields in the request
     },
 });
@@ -44,7 +44,7 @@ route.get("/logged-user", requireLogin, userController.getLoggedUser)
 route.get("/platform/analytics", requireLogin, userController.getUserAnalytics)
 route.post("/analytics", requireLogin, userController.saveAnalytics)
 route.get("/user/:id", userController.getUserById)
-route.patch("/update-profile", upload.single('profilePicture'), requireLogin, userController.updateProfile)
+route.patch("/update-profile", requireLogin, upload.single('profilePicture'), userController.updateProfile)
 route.get("/verify-user/:token", userController.verifyUser)
 route.get("/users/emails", userController.getAllUserEmails);
 route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe(req, res));
