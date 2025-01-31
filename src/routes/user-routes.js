@@ -29,7 +29,15 @@ const fileFilter = (req, file, cb) => {
 
 
 // const upload = multer({ dest: 'uploads/' });
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // Max file size: 5MB
+        fieldSize: 1024 * 10, // Limit text field size to 10KB
+        fields: 10, // Limit number of fields in the request
+    },
+});
 route.post("/sign-in", userController.signIn)
 route.post("/sign-up", userController.signUp)
 route.get("/logged-user", requireLogin, userController.getLoggedUser)
