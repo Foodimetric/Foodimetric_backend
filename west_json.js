@@ -8,17 +8,29 @@ const addWestAfricaFoodDataToDB = () => {
     files.forEach(file => {
         fs.readFile(file, "utf-8", async (err, data) => {
             if (err) {
-                console.error(`Error reading file ${file}:`, err.message);
+                console.error(`Error reading file ${file}:, err.message`);
                 return;
             }
 
             try {
-                const jsonData = JSON.parse(data);
-                let fileData = Object.values(jsonData);
+                let jsonData = JSON.parse(data);
+
+                // Ensure jsonData is an array of arrays
+                if (!Array.isArray(jsonData)) {
+                    console.error(`Invalid JSON format in ${file}`);
+                    return;
+                }
+
+                // Flatten the array and remove headers (empty rows or those without food names)
+                let fileData = jsonData.flat().filter(row => 
+                    row["NOM ABRÉGÉ"] && row["BiblioID"] && row["NOM ABRÉGÉ"] !== "FOOD CODE"
+                );
+
+                // Upload the cleaned data without modifications
                 await westAfricaFoodRepository.addFoodData(fileData);
                 console.log(`Data successfully added from ${file}`);
             } catch (error) {
-                console.error(`Error processing file ${file}:`, error.message);
+                console.error(`Error processing file ${file}:, error.message`);
             }
         });
     });
