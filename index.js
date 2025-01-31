@@ -10,7 +10,8 @@ const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
 const swaggerUi = require("swagger-ui-express");
-const swaggerJSDoc = require('swagger-jsdoc')
+const swaggerJSDoc = require('swagger-jsdoc');
+const path = require('path');
 
 const Food = require('./src/models/food.models');
 const User = require('./src/models/user.models');
