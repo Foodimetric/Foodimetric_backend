@@ -24,7 +24,7 @@ app.use(
         origin: "*"
     })
 )
-// app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true })); 
 app.use("/uploads", express.static("uploads"));
 const options = {
     definition: {
