@@ -9,6 +9,14 @@ const route = require("express").Router();
 const userController = new UserController()
 const newsletterController = new NewsletterController()
 
+// Define the path to your uploads directory
+const uploadDir = path.join(__dirname, 'uploads');
+
+// Check if the directory exists, and create it if it doesn't
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
