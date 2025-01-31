@@ -57,13 +57,16 @@ class UserController {
     }
 
     async updateProfile(req, res) {
+        console.log('we are getting called ');
         const update = req.body;
         const user = req.user
 
         if (req.file) {
+            console.log('who called ');
             // If the profile picture exists in the request, update the profile with the image URL
-            update.profilePicture = req.file.path; 
+            update.profilePicture = req.file.path;
         }
+        console.log('oops ');
         let result = await userRepository.editProfile(update, user)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
