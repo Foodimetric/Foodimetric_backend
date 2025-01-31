@@ -2,7 +2,7 @@ const fs = require("fs");
 const WestAfricaFoodRepository = require("./src/repositories/WestAfricaFoodRepository");
 
 const westAfricaFoodRepository = new WestAfricaFoodRepository();
-const files = ["./data/west_africa_output.json"];
+const files = ["./data/west_africa_food.json"];
 
 const addWestAfricaFoodDataToDB = () => {
     files.forEach(file => {

@@ -72,7 +72,6 @@ connection.once('open', async ()=>{
 app.use(bodyParser.json({limit:"30mb", extended: true}));
 app.use(bodyParser.urlencoded({limit:"30mb", extended: true}));
 
-// app.use("/uploads", express.static("uploads"));
 app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 
 app.use("/users", userRoute)
@@ -86,10 +85,10 @@ app.get("/add-data", (req, res)=>{
     res.json("Done")    
 })
 
-// app.get("/add-west", (req, res)=>{
-//   addWestAfricaFoodDataToDB()
-//   res.json("Done")    
-// })
+app.get("/add-west", (req, res)=>{
+  addWestAfricaFoodDataToDB()
+  res.json("Done")    
+})
 
 //run server
 app.listen(port, ()=>{
