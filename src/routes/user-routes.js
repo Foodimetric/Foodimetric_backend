@@ -2,6 +2,7 @@ const { UserController } = require("../controllers/UserController");
 const {NewsletterController} = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
 const passport = require("passport");
+const path = require('path');
 const multer = require('multer');
 
 const route = require("express").Router();
