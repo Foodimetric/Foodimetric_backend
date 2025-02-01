@@ -67,8 +67,8 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection
 connection.once('open', async () => {
   console.log('Database running Successfully')
-  await addWestAfricaFoodDataToDB();
-  console.log('west africa added Successfully')
+  // await addWestAfricaFoodDataToDB();
+  // console.log('west africa added Successfully')
 })
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
@@ -86,11 +86,6 @@ app.get("/add-data", (req, res) => {
   addDataToDB()
   res.json("Done")
 })
-
-// app.get("/add-west", (req, res)=>{
-//   addWestAfricaFoodDataToDB()
-//   res.json("Done")    
-// })
 
 //run server
 app.listen(port, () => {
