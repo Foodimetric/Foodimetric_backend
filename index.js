@@ -85,10 +85,22 @@ app.get("/add-data", (req, res)=>{
     res.json("Done")    
 })
 
-app.get("/add-west", (req, res)=>{
-  addWestAfricaFoodDataToDB()
-  res.json("Done")    
-})
+// app.get("/add-west", (req, res)=>{
+//   addWestAfricaFoodDataToDB()
+//   res.json("Done")    
+// })
+
+app.get("/add-west", async (req, res) => {
+  console.log("Route /add-west triggered");
+  try {
+    await addWestAfricaFoodDataToDB();
+    res.json("Data upload completed successfully");
+  } catch (error) {
+    console.error("Error adding West Africa food data:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 //run server
 app.listen(port, ()=>{
