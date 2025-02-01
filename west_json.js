@@ -4,7 +4,7 @@ const WestAfricaFoodRepository = require("./src/repositories/WestAfricaFoodRepos
 const westAfricaFoodRepository = new WestAfricaFoodRepository();
 const files = ["./data/west_africa_food.json"];
 
-const addWestAfricaFoodDataToDB = () => {
+const addWestAfricaFoodDataToDB = async () => {
     files.forEach(file => {
         console.log('file 1')
         fs.readFile(file, "utf-8", async (err, data) => {
