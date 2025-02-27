@@ -27,11 +27,8 @@ const io = new Server(server, {
 });
 
 //activate cors
-app.use(
-  cors({
-    origin: "*"
-  })
-)
+app.use(cors({ origin: process.env.FRONTEND_URL}));
+
 const options = {
   definition: {
     openapi: "3.1.0",
@@ -97,7 +94,12 @@ app.post("/chat", async (req, res) => {
     const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ error: "Error communicating with NutriBot API" });
+    console.error("Error communicating with NutriBot API:", error.response?.data || error.message);
+
+    res.status(500).json({
+      error: "Error communicating with NutriBot API",
+      details: error.response?.data || error.message, // Provide more context
+    });
   }
 });
 
