@@ -2,9 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
-const { Server } = require("socket.io");
-const Redis = require("ioredis");
-const { createServer } = require("http");
+// const { Server } = require("socket.io");
+// const Redis = require("ioredis");
+// const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
@@ -22,7 +22,7 @@ const User = require('./src/models/user.models');
 const passport = require("./src/config/passport");
 
 const app = express();
-const server = createServer(app);
+// const server = createServer(app);
 // const io = new Server(server, {
 //   cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
 // });
