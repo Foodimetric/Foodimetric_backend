@@ -23,12 +23,12 @@ const passport = require("./src/config/passport");
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
-  cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
-});
+// const io = new Server(server, {
+//   cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
+// });
 
 
-const redis = new Redis();
+// const redis = new Redis();
 
 //activate cors
 app.use(
