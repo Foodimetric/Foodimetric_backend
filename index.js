@@ -27,7 +27,14 @@ const io = new Server(server, {
 });
 
 //activate cors
-app.use(cors({ origin: process.env.FRONTEND_URL}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Allow additional HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
+    // credentials: true, // If using cookies/authentication
+  })
+);
 
 const options = {
   definition: {
