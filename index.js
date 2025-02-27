@@ -98,7 +98,7 @@ app.get("/add-data", (req, res) => {
   res.json("Done")
 })
 
-const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat"; // Python API
+const NUTRIBOT_API_URL = "http://localhost:5001/api/chat"; // Python API
 
 // REST API Endpoint for Chat
 app.post("/chat", async (req, res) => {
