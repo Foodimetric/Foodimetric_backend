@@ -2,9 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
-// const { Server } = require("socket.io");
-// const Redis = require("ioredis");
-// const { createServer } = require("http");
+const { Server } = require("socket.io");
+const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
@@ -22,13 +21,10 @@ const User = require('./src/models/user.models');
 const passport = require("./src/config/passport");
 
 const app = express();
-// const server = createServer(app);
-// const io = new Server(server, {
-//   cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
-// });
-
-
-// const redis = new Redis();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
+});
 
 //activate cors
 app.use(
@@ -36,7 +32,6 @@ app.use(
     origin: "*"
   })
 )
-// app.use(express.urlencoded({ extended: true })); 
 const options = {
   definition: {
     openapi: "3.1.0",
@@ -70,16 +65,12 @@ app.use(
 const port = process.env.PORT || 5010
 const uri = process.env.DB_URI
 
-
-//local const uri = 
 // connect mongodb
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const connection = mongoose.connection
 connection.once('open', async () => {
   console.log('Database running Successfully')
-  // await addWestAfricaFoodDataToDB();
-  // console.log('west africa added Successfully')
 })
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
@@ -91,62 +82,48 @@ app.use("/users", userRoute)
 app.use("/foods", foodRoute)
 app.use('/calculations', calculationsRoutes);
 app.use('/food_diary', diaryRoutes);
-// app.use(passport.initialize());
-// app.use(passport.session());
 app.get("/add-data", (req, res) => {
   addDataToDB()
   res.json("Done")
 })
 
-const NUTRIBOT_API_URL = "http://localhost:5001/api/chat"; // Python API
+const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat"; // Python API
 
 // REST API Endpoint for Chat
-// app.post("/chat", async (req, res) => {
-//   const { text, user_id } = req.body;
-//   const cacheKey = `chat:${user_id}:${text}`;
+app.post("/chat", async (req, res) => {
+  const { text, user_id } = req.body;
 
-//   // Check if response exists in cache
-//   const cachedResponse = await redis.get(cacheKey);
-//   if (cachedResponse) {
-//     return res.json(JSON.parse(cachedResponse));
-//   }
+  try {
+    const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: "Error communicating with NutriBot API" });
+  }
+});
 
-//   try {
-//     const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
-//     redis.setex(cacheKey, 3600, JSON.stringify(response.data)); // Cache for 1 hour
-//     res.json(response.data);
-//   } catch (error) {
-//     res.status(500).json({ error: "Error communicating with NutriBot API" });
-//   }
-// });
+// WebSocket for real-time chat
+io.on("connection", (socket) => {
+  console.log("User connected:", socket.id);
 
-// // WebSocket for real-time chat
-// io.on("connection", (socket) => {
-//   console.log("User connected:", socket.id);
+  socket.on("chat_message", async (data) => {
+    const { text, user_id } = data;
 
-//   socket.on("chat_message", async (data) => {
-//     const { text, user_id } = data;
-//     const cacheKey = `chat:${user_id}:${text}`;
+    try {
+      const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
+      socket.emit("chat_response", response.data);
+    } catch (error) {
+      socket.emit("error", { error: "Failed to connect to NutriBot API" });
+    }
+  });
 
-//     const cachedResponse = await redis.get(cacheKey);
-//     if (cachedResponse) {
-//       return socket.emit("chat_response", JSON.parse(cachedResponse));
-//     }
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
 
-//     try {
-//       const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
-//       redis.setex(cacheKey, 3600, JSON.stringify(response.data));
-//       socket.emit("chat_response", response.data);
-//     } catch (error) {
-//       socket.emit("error", { error: "Failed to connect to NutriBot API" });
-//     }
-//   });
-
-//   socket.on("disconnect", () => {
-//     console.log("User disconnected:", socket.id);
-//   });
-// });
-
+  socket.on("ping", () => {
+    socket.emit("pong");
+  }); // Keep WebSocket alive on Render
+});
 
 //run server
 app.listen(port, () => {
