@@ -268,7 +268,8 @@ class UserController {
     
             return certainRespondMessage(res, null, "Message received successfully", 200);
         } catch (error) {
-            return certainRespondMessage(res, null, "Failed to send message", 500);
+            console.error("Error in contact function:", error); // Log the error
+            return certainRespondMessage(res, null, `Failed to send message: ${error.message}`, 500);
         }
     }
 
