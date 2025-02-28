@@ -64,6 +64,8 @@ route.get(
     passport.authenticate("google", { scope: ["profile", "email"] }) 
 );
 
+route.post("/contact", userController.contact);
+
 // Callback route for Google to redirect to
 route.get(
     "/google/callback",

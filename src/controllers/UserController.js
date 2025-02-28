@@ -1,8 +1,10 @@
 const User = require("../models/user.models")
 const Anthro = require("../models/anthropometric")
 const Diary = require("../models/diary.model")
+const Contact = require("../models/contact.model");
 const UserRepository = require("../repositories/UserRepository");
 const { certainRespondMessage } = require("../utils/response");
+const nodemailer = require("nodemailer");
 
 
 const getUser = async (id, res) => {
@@ -251,6 +253,52 @@ class UserController {
         }
     }
 
+    async contact(req, res) {
+        try {
+            const { name, email, address, service, note } = req.body;
+    
+            if (!name || !email || !address || !service || !note) {
+                return certainRespondMessage(res, null, "All fields are required", 400);
+            }
+    
+            // Example: Save to the database (if you have a Contact model)
+            const contactMessage = new Contact({ name, email, address, service, note });
+            await contactMessage.save();
+            await sendEmail(name, email, address, service, note);
+    
+            return certainRespondMessage(res, null, "Message received successfully", 200);
+        } catch (error) {
+            return certainRespondMessage(res, null, "Failed to send message", 500);
+        }
+    }
+
+    async sendEmail(name, email, address, service, note) {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_ADDRESS, // Use environment variables for security
+                pass: process.env.EMAIL_TEST_PASSWORD,
+            }
+        });
+    
+        const mailOptions = {
+            from: `"Foodimetric Contact" <${email}>`,
+            to: "foodimetric@gmail.com",
+            cc: ["follycube2020@gmail.com", "ademolaayomide121@gmail.com", "aderemioluwadamiola@gmail.com"], // Add CC recipients here
+            subject: "New Contact Form Submission",
+            html: `
+                <h2>New Contact Form Submission</h2>
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Address:</strong> ${address}</p>
+                <p><strong>Service:</strong> ${service}</p>
+                <p><strong>Message:</strong> ${note}</p>
+            `
+        };
+    
+        await transporter.sendMail(mailOptions);
+    }
+    
+    
 }
 
 
