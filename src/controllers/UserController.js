@@ -253,31 +253,31 @@ class UserController {
         }
     }
 
-    async sendEmail(name, email, address, service, note) {
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_ADDRESS, // Use environment variables for security
-                pass: process.env.EMAIL_TEST_PASSWORD,
-            }
-        });
+    // async sendEmail(name, email, address, service, note) {
+    //     const transporter = nodemailer.createTransport({
+    //         service: "gmail",
+    //         auth: {
+    //             user: process.env.EMAIL_ADDRESS, // Use environment variables for security
+    //             pass: process.env.EMAIL_TEST_PASSWORD,
+    //         }
+    //     });
     
-        const mailOptions = {
-            from: `"Foodimetric Contact" <${email}>`,
-            to: "foodimetric@gmail.com",
-            cc: ["follycube2020@gmail.com", "ademolaayomide121@gmail.com", "aderemioluwadamiola@gmail.com"], // Add CC recipients here
-            subject: "New Contact Form Submission",
-            html: `
-                <h2>New Contact Form Submission</h2>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Address:</strong> ${address}</p>
-                <p><strong>Service:</strong> ${service}</p>
-                <p><strong>Message:</strong> ${note}</p>
-            `
-        };
+    //     const mailOptions = {
+    //         from: `"Foodimetric Contact" <${email}>`,
+    //         to: "foodimetric@gmail.com",
+    //         cc: ["follycube2020@gmail.com", "ademolaayomide121@gmail.com", "aderemioluwadamiola@gmail.com"], // Add CC recipients here
+    //         subject: "New Contact Form Submission",
+    //         html: `
+    //             <h2>New Contact Form Submission</h2>
+    //             <p><strong>Name:</strong> ${name}</p>
+    //             <p><strong>Address:</strong> ${address}</p>
+    //             <p><strong>Service:</strong> ${service}</p>
+    //             <p><strong>Message:</strong> ${note}</p>
+    //         `
+    //     };
     
-        await transporter.sendMail(mailOptions);
-    }
+    //     await transporter.sendMail(mailOptions);
+    // }
 
     async contact(req, res) {
         try {
@@ -286,12 +286,33 @@ class UserController {
             if (!name || !email || !address || !service || !note) {
                 return certainRespondMessage(res, null, "All fields are required", 400);
             }
+
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_ADDRESS, // Use environment variables for security
+                    pass: process.env.EMAIL_TEST_PASSWORD,
+                }
+            });
+            const mailOptions = {
+                from: `"Foodimetric Contact" <${email}>`,
+                to: "foodimetric@gmail.com",
+                cc: ["follycube2020@gmail.com", "ademolaayomide121@gmail.com", "aderemioluwadamiola@gmail.com"], // Add CC recipients here
+                subject: "New Contact Form Submission",
+                html: `
+                    <h2>New Contact Form Submission</h2>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Address:</strong> ${address}</p>
+                    <p><strong>Service:</strong> ${service}</p>
+                    <p><strong>Message:</strong> ${note}</p>
+                `
+            };    
     
             // Example: Save to the database (if you have a Contact model)
             const contactMessage = new Contact({ name, email, address, service, note });
             await contactMessage.save();
-            // await this.sendEmail(name, email, address, service, note);
-    
+            await transporter.sendMail(mailOptions);
+
             return certainRespondMessage(res, null, "Message received successfully", 200);
         } catch (error) {
             console.error("Error in contact function:", error); // Log the error
