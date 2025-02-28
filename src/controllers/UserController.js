@@ -290,7 +290,7 @@ class UserController {
             // Example: Save to the database (if you have a Contact model)
             const contactMessage = new Contact({ name, email, address, service, note });
             await contactMessage.save();
-            await this.sendEmail(name, email, address, service, note);
+            // await this.sendEmail(name, email, address, service, note);
     
             return certainRespondMessage(res, null, "Message received successfully", 200);
         } catch (error) {
