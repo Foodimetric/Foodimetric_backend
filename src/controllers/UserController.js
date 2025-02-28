@@ -253,26 +253,6 @@ class UserController {
         }
     }
 
-    async contact(req, res) {
-        try {
-            const { name, email, address, service, note } = req.body;
-    
-            if (!name || !email || !address || !service || !note) {
-                return certainRespondMessage(res, null, "All fields are required", 400);
-            }
-    
-            // Example: Save to the database (if you have a Contact model)
-            const contactMessage = new Contact({ name, email, address, service, note });
-            await contactMessage.save();
-            await sendEmail(name, email, address, service, note);
-    
-            return certainRespondMessage(res, null, "Message received successfully", 200);
-        } catch (error) {
-            console.error("Error in contact function:", error); // Log the error
-            return certainRespondMessage(res, null, `Failed to send message: ${error.message}`, 500);
-        }
-    }
-
     async sendEmail(name, email, address, service, note) {
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -298,8 +278,26 @@ class UserController {
     
         await transporter.sendMail(mailOptions);
     }
+
+    async contact(req, res) {
+        try {
+            const { name, email, address, service, note } = req.body;
     
+            if (!name || !email || !address || !service || !note) {
+                return certainRespondMessage(res, null, "All fields are required", 400);
+            }
     
+            // Example: Save to the database (if you have a Contact model)
+            const contactMessage = new Contact({ name, email, address, service, note });
+            await contactMessage.save();
+            await sendEmail(name, email, address, service, note);
+    
+            return certainRespondMessage(res, null, "Message received successfully", 200);
+        } catch (error) {
+            console.error("Error in contact function:", error); // Log the error
+            return certainRespondMessage(res, null, `Failed to send message: ${error.message}`, 500);
+        }
+    } 
 }
 
 
