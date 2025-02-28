@@ -8,6 +8,7 @@ const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
 const foodRoute = require("./src/routes/food-routes");
+const Message = require("./src/models/message");
 const calculationsRoutes = require("./src/routes/calculation");
 const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
@@ -104,6 +105,7 @@ app.post("/chat", async (req, res) => {
   const { text, user_id } = req.body;
 
   try {
+    await Message.create({ user_id, text });
     const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
     res.json(response.data);
   } catch (error) {
