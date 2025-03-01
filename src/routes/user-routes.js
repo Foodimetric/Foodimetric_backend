@@ -72,6 +72,7 @@ route.get(
         failureRedirect: process.env.FRONTEND_URL
     }),
     (req, res) => {
+        console.log("📌 Google OAuth callback hit", res);
         res.json({ message: "Authentication successful", user: req.user });
     }
 );
