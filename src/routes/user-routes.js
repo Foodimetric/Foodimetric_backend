@@ -69,23 +69,32 @@ route.get(
     "/google/callback",
     passport.authenticate("google", { session: false }),
     (req, res) => {
-        console.log("📌 Google OAuth callback hit");
-
         if (!req.user) {
-            return res.status(401).json({ message: "Authentication failed" });
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
         }
 
-        // Extract user and token from `req.user`
-        const { user, token } = req.user;
+        // ✅ Generate token
+        const token = jwt.sign({ _id: user._id }, jwt_secret, { expiresIn: "7d" });
 
-        // ✅ Send token and user data to frontend
-        return res.status(200).json({
-            message: "Authentication successful",
-            token,
-            user
-        });
+        // ✅ Send user data & token to frontend
+        const user = {
+            _id: req.user._id,
+            email: req.user.email,
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
+            category: req.user.category,
+            location: req.user.location,
+            createdAt: req.user.createdAt,
+            profilePicture: req.user.profilePicture || ''
+        };
+
+        // ✅ Redirect with query params
+        res.redirect(
+            `${process.env.FRONTEND_DASHBOARD}?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`
+        );
     }
 );
+
 
 
 route.post("/contact", userController.contact);
