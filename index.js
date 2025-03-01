@@ -19,8 +19,8 @@ const path = require('path');
 
 const Food = require('./src/models/food.models');
 const User = require('./src/models/user.models');
-const passport = require("passport");
 const session = require("express-session");
+const passport = require("passport");
 const passportSetup = require("./src/config/passport");
 
 const app = express();
