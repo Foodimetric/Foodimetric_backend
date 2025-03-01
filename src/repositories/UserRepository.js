@@ -45,7 +45,7 @@ class UserRepository {
 
       let doMatch = await bcrypt.compare(password, user.password);
       if (doMatch) {
-        const token = jwt.sign({ _id: user._id }, jwt_secret);
+        const token = jwt.sign({ _id: user._id }, jwt_secret, { expiresIn: "7d" });
         return {
           payload: { token, user },
         };

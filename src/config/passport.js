@@ -37,7 +37,8 @@ passport.use(
                 });
 
                 await user.save();
-                return done(null, user);
+                const token = jwt.sign({ _id: user._id }, jwt_secret, { expiresIn: "7d" });
+                return done(null, { user, token });
             } catch (err) {
                 console.error("❌ Error in Google OAuth Strategy:", err);
                 return done(err, null);

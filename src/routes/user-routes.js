@@ -67,13 +67,23 @@ route.get(
 // Callback route for Google to redirect to
 route.get(
     "/google/callback",
-    passport.authenticate("google", {
-        successRedirect: process.env.FRONTEND_DASHBOARD,
-        failureRedirect: process.env.FRONTEND_URL
-    }),
+    passport.authenticate("google", { session: false }),
     (req, res) => {
-        console.log("📌 Google OAuth callback hit", res);
-        res.json({ message: "Authentication successful", user: req.user });
+        console.log("📌 Google OAuth callback hit");
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Authentication failed" });
+        }
+
+        // Extract user and token from `req.user`
+        const { user, token } = req.user;
+
+        // ✅ Send token and user data to frontend
+        return res.status(200).json({
+            message: "Authentication successful",
+            token,
+            user
+        });
     }
 );
 
