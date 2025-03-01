@@ -1,5 +1,5 @@
 const { UserController } = require("../controllers/UserController");
-const {NewsletterController} = require('../controllers/NewsletterController')
+const { NewsletterController } = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
@@ -16,7 +16,7 @@ const uploadDir = path.join(__dirname, 'uploads');
 
 // Check if the directory exists, and create it if it doesn't
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+    fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 
@@ -62,7 +62,7 @@ route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe
 route.delete("/users/delete", requireLogin, (req, res) => userController.deleteAccount(req, res));
 route.get(
     "/google",
-    passport.authenticate("google", { scope: ["profile", "email"] }) 
+    passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 // Callback route for Google to redirect to
@@ -75,7 +75,7 @@ route.get(
         }
 
         // ✅ Generate token
-        const token = jwt.sign({ _id: user._id }, jwt_secret, { expiresIn: "7d" });
+        const token = jwt.sign({ _id: req.user._id }, jwt_secret, { expiresIn: "7d" });
 
         // ✅ Send user data & token to frontend
         const user = {
