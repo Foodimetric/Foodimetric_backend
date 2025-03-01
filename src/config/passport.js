@@ -7,7 +7,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "/api/auth/google/callback",
+            callbackURL: process.env.URL + "/users/google/callback"
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -17,9 +17,13 @@ passport.use(
                 if (!user) {
                     // Create a new user
                     user = new User({
-                        name: profile.displayName,
+                        firstName: profile.displayName.split(" ")[0] || "", // Extract first name
+                        lastName: profile.displayName.split(" ")[1] || "",
                         email: profile.emails[0].value,
                         googleId: profile.id,
+                        password: null, // No password for Google users
+                        category: 0, // Default category
+                        isVerified: true, // Mark Google users as verified
                     });
 
                     await user.save();

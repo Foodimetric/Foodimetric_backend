@@ -111,35 +111,35 @@ class UserController {
         }
     }
 
-    async signUpWithGoogle(profile) {
-        const { id, displayName, emails } = profile; // Google profile details
+    // async signUpWithGoogle(profile) {
+    //     const { id, displayName, emails } = profile; // Google profile details
 
-        try {
-            // Check if user already exists
-            let user = await User.findOne({ googleId: id });
+    //     try {
+    //         // Check if user already exists
+    //         let user = await User.findOne({ googleId: id });
 
-            if (!user) {
-                user = new User({
-                    email: emails[0].value,
-                    googleId: id,
-                    firstName: displayName.split(" ")[0] || "", // Extract first name
-                    lastName: displayName.split(" ")[1] || "", // Extract last name (if available)
-                    password: null, // No password for Google users
-                    category: 0, // Default category
-                    isVerified: true, // Mark Google users as verified
-                });
+    //         if (!user) {
+    //             user = new User({
+    //                 email: emails[0].value,
+    //                 googleId: id,
+    //                 firstName: displayName.split(" ")[0] || "", // Extract first name
+    //                 lastName: displayName.split(" ")[1] || "", // Extract last name (if available)
+    //                 password: null, // No password for Google users
+    //                 category: 0, // Default category
+    //                 isVerified: true, // Mark Google users as verified
+    //             });
 
-                user = await user.save(); // Save the new user
-            }
+    //             user = await user.save(); // Save the new user
+    //         }
 
-            return {
-                message: "Google Sign-Up Successful",
-                payload: user,
-            };
-        } catch (error) {
-            throw new Error("Error during Google Sign-Up: " + error.message);
-        }
-    }
+    //         return {
+    //             message: "Google Sign-Up Successful",
+    //             payload: user,
+    //         };
+    //     } catch (error) {
+    //         throw new Error("Error during Google Sign-Up: " + error.message);
+    //     }
+    // }
 
     async forgotPassword(req, res) {
         try {
@@ -252,32 +252,6 @@ class UserController {
             res.status(500).json({ message: "Error updating platform usage.", error: error.message });
         }
     }
-
-    // async sendEmail(name, email, address, service, note) {
-    //     const transporter = nodemailer.createTransport({
-    //         service: "gmail",
-    //         auth: {
-    //             user: process.env.EMAIL_ADDRESS, // Use environment variables for security
-    //             pass: process.env.EMAIL_TEST_PASSWORD,
-    //         }
-    //     });
-    
-    //     const mailOptions = {
-    //         from: `"Foodimetric Contact" <${email}>`,
-    //         to: "foodimetric@gmail.com",
-    //         cc: ["follycube2020@gmail.com", "ademolaayomide121@gmail.com", "aderemioluwadamiola@gmail.com"], // Add CC recipients here
-    //         subject: "New Contact Form Submission",
-    //         html: `
-    //             <h2>New Contact Form Submission</h2>
-    //             <p><strong>Name:</strong> ${name}</p>
-    //             <p><strong>Address:</strong> ${address}</p>
-    //             <p><strong>Service:</strong> ${service}</p>
-    //             <p><strong>Message:</strong> ${note}</p>
-    //         `
-    //     };
-    
-    //     await transporter.sendMail(mailOptions);
-    // }
 
     async contact(req, res) {
         try {

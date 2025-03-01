@@ -64,24 +64,21 @@ route.get(
     passport.authenticate("google", { scope: ["profile", "email"] }) 
 );
 
-route.post("/contact", userController.contact);
-
 // Callback route for Google to redirect to
 route.get(
     "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/" }),
-    async (req, res) => {
-        try {
-            const profile = req.user; // Google profile
-
-            const result = await userController.signUpWithGoogle(profile);
-
-            res.status(200).json(result);
-        } catch (error) {
-            res.status(500).json({ message: "Google Authentication Failed", error: error.message });
-        }
+    passport.authenticate("google", {
+        successRedirect: process.env.FRONTEND_DASHBOARD,
+        failureRedirect: process.env.FRONTEND_URL
+    }),
+    (req, res) => {
+        res.json({ message: "Authentication successful", user: req.user });
     }
 );
+
+
+route.post("/contact", userController.contact);
+
 route.post("/forgot-password", (req, res) => userController.forgotPassword(req, res));
 
 // Reset Password
