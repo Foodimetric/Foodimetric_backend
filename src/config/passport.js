@@ -19,6 +19,7 @@ passport.use(
                     // If the user exists but doesn't have a googleId, update it
                     if (!user.googleId) {
                         user.googleId = profile.id;
+                        user.profilePicture = profile.photos[0]?.value || ""
                         await user.save();
                     }
                     return done(null, user);
@@ -30,6 +31,7 @@ passport.use(
                     firstName: profile.displayName.split(" ")[0] || "",
                     lastName: profile.displayName.split(" ")[1] || "",
                     email: profile.emails[0].value,
+                    profilePicture: profile.photos[0]?.value || "",
                     googleId: profile.id,
                     password: null, // No password for Google users
                     category: 0,
