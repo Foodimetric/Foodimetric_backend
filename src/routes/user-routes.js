@@ -75,7 +75,7 @@ route.get(
         }
 
         // ✅ Generate token
-        const token = jwt.sign({ _id: req.user._id }, jwt_secret, { expiresIn: "7d" });
+        const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
         // ✅ Send user data & token to frontend
         const user = {
