@@ -11,32 +11,35 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                console.log("🔹 Google OAuth callback triggered");
-                console.log("🔹 Received Profile:", profile);
-                // Check if the user already exists
-                let user = await User.findOne({ googleId: profile.id });
-                console.log("🔹 User found in DB:", user);
+                console.log("🔍 Checking user in DB...");
+                let user = await User.findOne({ email: profile.emails[0].value });
 
-                if (!user) {
-                    console.log("⚡ New user, creating entry in DB...");
-                    // Create a new user
-                    user = new User({
-                        firstName: profile.displayName.split(" ")[0] || "", // Extract first name
-                        lastName: profile.displayName.split(" ")[1] || "",
-                        email: profile.emails[0].value,
-                        googleId: profile.id,
-                        password: null, // No password for Google users
-                        category: 0, // Default category
-                        isVerified: true, // Mark Google users as verified
-                    });
+                if (user) {
+                    console.log("✅ User exists, updating Google ID...");
+                    // If the user exists but doesn't have a googleId, update it
+                    if (!user.googleId) {
+                        user.googleId = profile.id;
+                        await user.save();
+                    }
+                    return done(null, user);
+                } 
 
-                    await user.save();
-                    console.log("✅ New user saved:", user);
-                }
-                console.log("✅ Existing user logging in:", user);
+                console.log("⚡ New user, creating entry in DB...");
+                // Create a new user if no account exists
+                user = new User({
+                    firstName: profile.displayName.split(" ")[0] || "",
+                    lastName: profile.displayName.split(" ")[1] || "",
+                    email: profile.emails[0].value,
+                    googleId: profile.id,
+                    password: null, // No password for Google users
+                    category: 0,
+                    isVerified: true
+                });
+
+                await user.save();
                 return done(null, user);
             } catch (err) {
-                console.error("❌ Error in Google OAuth Strategy:", err)
+                console.error("❌ Error in Google OAuth Strategy:", err);
                 return done(err, null);
             }
         }
