@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const userModel = new Schema({
     email: {type: String, required: true, unique: true},
-    password: {type: String, required: true},
     firstName: {type: String, required: false},
     lastName: {type: String, required: false},
-    googleId: { type: String, unique: true, default: null}, // For Google users
+    googleId: { type: String, unique: true, sparse: true}, // For Google users
+    password: { type: String, required: function () { return !this.googleId; } }, 
     category: { 
         type: Number, 
         enum: [0, 1, 2, 3, 4, 5], // Restricts values to 0 or 1
