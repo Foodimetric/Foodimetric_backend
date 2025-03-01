@@ -21,7 +21,7 @@ const Food = require('./src/models/food.models');
 const User = require('./src/models/user.models');
 const session = require("express-session");
 const passport = require("passport");
-const passportSetup = require("./src/config/passport");
+require("./src/config/passport");
 
 const app = express();
 const server = createServer(app);
@@ -29,17 +29,17 @@ const io = new Server(server, {
   cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] }
 });
 
-app.use(passport.initialize())
-app.use(passport.session());
 app.use(
   session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: { secure: true }, // Set to `true` in production if using HTTPS
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }, // Set to `true` in production if using HTTPS
   })
 );
 
+app.use(passport.initialize())
+app.use(passport.session());
 app.use(
   cors({
     origin: "*"
