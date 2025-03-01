@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
+const MongoStore = require("connect-mongo");
 const bodyParser = require('body-parser');
 const { Server } = require("socket.io");
 const { createServer } = require("http");
@@ -34,6 +35,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.DB_URI, // Use your MongoDB connection URI
+      collectionName: "sessions", // Store sessions in "sessions" collection
+    }),
     cookie: { secure: true }, // Set to `true` in production if using HTTPS
   })
 );
