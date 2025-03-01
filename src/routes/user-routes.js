@@ -79,6 +79,7 @@ route.get(
 
         // ✅ Send user data & token to frontend
         const user = {
+            token,
             _id: req.user._id,
             email: req.user.email,
             firstName: req.user.firstName,
