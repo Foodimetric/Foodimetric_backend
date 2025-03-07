@@ -11,91 +11,117 @@ const registerHtml = (token) => {
 
   return `
     <!DOCTYPE html>
-    <html>
+    <html lang="en">
     <head>
-        <title>Verify Your Email - Foodimetric</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to Foodimetric!</title>
         <style>
             body {
-                font-family: Arial, sans-serif;
+                font-family: cursive, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 background-color: #f9f9f9;
                 margin: 0;
                 padding: 0;
-                line-height: 1.6;
-                color: #333333;
+                color: #333;
             }
+
             .container {
                 max-width: 600px;
-                margin: 20px auto;
-                background: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                margin: 40px auto;
+                background-color: #ffffff;
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 overflow: hidden;
+                text-align: center;
             }
+
             .header {
-                background-color: #007bff;
+                background-color: #147e03;
                 color: #ffffff;
-                text-align: center;
-                padding: 20px;
+                padding: 30px 20px;
             }
+
+            .header img {
+                max-width: 100px;
+                margin-bottom: 10px;
+            }
+
             .header h1 {
-                margin: 0;
                 font-size: 24px;
+                margin: 0;
+                font-weight: bold;
             }
+
             .content {
-                padding: 20px;
-                text-align: center;
+                padding: 30px;
             }
+
+            .content h2 {
+                color: #ed3300b3;
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+
             .content p {
-                margin: 15px 0;
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 20px;
             }
+
             .button {
                 display: inline-block;
-                background-color: #007bff;
-                color: #ffffff;
+                background-color: #ffba08;
+                color: #000;
                 text-decoration: none;
-                padding: 12px 20px;
+                padding: 14px 25px;
                 font-size: 16px;
-                border-radius: 5px;
-                margin-top: 20px;
+                border-radius: 30px;
+                font-weight: bold;
+                transition: background 0.3s ease-in-out;
             }
+
             .button:hover {
-                background-color: #0056b3;
+                background-color: #e0a807;
             }
+
             .footer {
-                background-color: #f1f1f1;
-                padding: 15px;
-                text-align: center;
+                background-color: #333;
+                color: #ffffff;
+                padding: 20px;
                 font-size: 14px;
-                color: #666666;
+                text-align: center;
             }
+
             .footer a {
-                color: #007bff;
+                color: #ffba08;
                 text-decoration: none;
+                font-weight: bold;
             }
+
             .footer a:hover {
                 text-decoration: underline;
             }
         </style>
     </head>
+
     <body>
         <div class="container">
             <div class="header">
+                <img src="https://foodimetric.com/logo.png" alt="Foodimetric Logo">
                 <h1>Welcome to Foodimetric!</h1>
             </div>
             <div class="content">
-                <p>Hi there,</p>
-                <p>Thank you for signing up with Foodimetric! We're thrilled to have you on board. Please confirm your email address to activate your account.</p>
-                <a href="https://foodimetric.com/verify?token=${token}" class="button">Verify Your Email</a>
-                <p>If you didn't create this account, you can safely ignore this email.</p>
-                <p>Need help? Reach out to us anytime using the details below:</p>
+                <h2>Hi there,</h2>
+                <p>Thank you for joining Foodimetric! We're thrilled to have you onboard. To get started, please verify your
+                    email address by clicking the button below:</p>
                 <p>
-                    <strong>Email:</strong> <a href="mailto:foodimetric@gmail.com">foodimetric@gmail.com</a><br>
-                    <strong>WhatsApp:</strong> <a href="https://wa.me/2347085056806">+234 708 505 6806</a><br>
-                    <strong>Instagram:</strong> <a href="https://www.instagram.com/foodimetric/" target="_blank">Follow us on Instagram</a>
+                    <a href="https://foodimetric.com/verify?token=${token}"class="button">Verify Your Email</a>
                 </p>
+                <p>If you didn’t sign up for this account, please ignore this email.</p>
             </div>
             <div class="footer">
-                <p>Best regards,<br>The Foodimetric Team</p>
+                <p>Need help? Contact us at <a href="mailto:foodimetric@gmail.com">foodimetric@gmail.com</a></p>
+                <p><a href="https://foodimetric.com">Visit our website</a></p>
             </div>
         </div>
     </body>
