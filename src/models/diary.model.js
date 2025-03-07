@@ -11,7 +11,7 @@ const diarySchema = new Schema({
     date: { type: Date, required: true, default: Date.now }, // Automatically captures the current date
     time: { type: String, required: true }, // Time in HH:MM format
     foodEaten: { type: String, required: true }, // Food name
-    quantity: { type: Number, required: true }, // Quantity in grams, ml, or units
+    quantity: { type: String, required: true }, // Quantity in grams, ml, or units
     additionalInfo: { type: String } // Optional field for any additional notes
 });
 
