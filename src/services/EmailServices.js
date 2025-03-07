@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-const registerHtml = (token) => {
+const registerHtml = (token) => { 
   console.log("Token received:", token); // Debugging statement to check token value
 
   if (!token) {
@@ -107,7 +107,7 @@ const registerHtml = (token) => {
     <body>
         <div class="container">
             <div class="header">
-                <img src="https://foodimetric.com/logo.png" alt="Foodimetric Logo">
+                <img src="https://foodimetric.com/logo-alt.png" alt="Foodimetric Logo">
                 <h1>Welcome to Foodimetric!</h1>
             </div>
             <div class="content">
