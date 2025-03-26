@@ -37,53 +37,53 @@ class AdminController {
         }
     }
 
-    // async getAnalytics(req, res) {
-    //     try {
-    //         // Daily usage analytics
-    //         const dailyUsage = await Analytics.find({}).sort({ date: -1 }).limit(30);
+    async getAnalytics(req, res) {
+        // try {
+        //     // Daily usage analytics
+        //     const dailyUsage = await Analytics.find({}).sort({ date: -1 }).limit(30);
 
-    //         // Total food diary logs
-    //         const totalFoodDiaryLogs = await FoodDiary.countDocuments();
+        //     // Total food diary logs
+        //     const totalFoodDiaryLogs = await FoodDiary.countDocuments();
 
-    //         // Most used anthropometric calculators
-    //         const mostUsedCalculators = await CalculatorUsage.aggregate([
-    //             { $group: { _id: "$calculatorName", count: { $sum: 1 } } },
-    //             { $sort: { count: -1 } },
-    //             { $limit: 5 },
-    //         ]);
+        //     // Most used anthropometric calculators
+        //     const mostUsedCalculators = await CalculatorUsage.aggregate([
+        //         { $group: { _id: "$calculatorName", count: { $sum: 1 } } },
+        //         { $sort: { count: -1 } },
+        //         { $limit: 5 },
+        //     ]);
 
-    //         // Top 10 active users
-    //         const topUsers = await User.find().sort({ analytics: -1 }).limit(10).select("name analytics");
+        //     // Top 10 active users
+        //     const topUsers = await User.find().sort({ analytics: -1 }).limit(10).select("name analytics");
 
-    //         // Top profession
-    //         const professionData = await User.aggregate([
-    //             { $group: { _id: "$profession", count: { $sum: 1 } } },
-    //             { $sort: { count: -1 } },
-    //             { $limit: 1 },
-    //         ]);
+        //     // Top profession
+        //     const professionData = await User.aggregate([
+        //         { $group: { _id: "$profession", count: { $sum: 1 } } },
+        //         { $sort: { count: -1 } },
+        //         { $limit: 1 },
+        //     ]);
 
-    //         // Top locations
-    //         const topLocations = await User.aggregate([
-    //             { $group: { _id: "$location", count: { $sum: 1 } } },
-    //             { $sort: { count: -1 } },
-    //             { $limit: 5 },
-    //         ]);
+        //     // Top locations
+        //     const topLocations = await User.aggregate([
+        //         { $group: { _id: "$location", count: { $sum: 1 } } },
+        //         { $sort: { count: -1 } },
+        //         { $limit: 5 },
+        //     ]);
 
-    //         return res.json({
-    //             dailyUsage,
-    //             totalFoodDiaryLogs,
-    //             mostUsedCalculators: mostUsedCalculators.map(calc => ({
-    //                 name: calc._id,
-    //                 count: calc.count,
-    //             })),
-    //             topUsers: topUsers.map(user => ({ name: user.name, usageCount: user.analytics })),
-    //             topProfession: professionData.length > 0 ? professionData[0]._id : "Unknown",
-    //             topLocations: topLocations.map(loc => ({ name: loc._id, count: loc.count })),
-    //         });
-    //     } catch (error) {
-    //         return res.status(500).json(certainRespondMessage("Error fetching analytics", false));
-    //     }
-    // }
+        //     return res.json({
+        //         dailyUsage,
+        //         totalFoodDiaryLogs,
+        //         mostUsedCalculators: mostUsedCalculators.map(calc => ({
+        //             name: calc._id,
+        //             count: calc.count,
+        //         })),
+        //         topUsers: topUsers.map(user => ({ name: user.name, usageCount: user.analytics })),
+        //         topProfession: professionData.length > 0 ? professionData[0]._id : "Unknown",
+        //         topLocations: topLocations.map(loc => ({ name: loc._id, count: loc.count })),
+        //     });
+        // } catch (error) {
+        //     return res.status(500).json(certainRespondMessage("Error fetching analytics", false));
+        // }
+    }
 }
 
 module.exports = { AdminController };
