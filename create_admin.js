@@ -1,4 +1,6 @@
 const Admin = require("./src/models/admin.models");
+const bcrypt = require("bcrypt");
+
 
 const createAdmins = async () => {
   try {
@@ -29,6 +31,9 @@ const createAdmins = async () => {
       },
     ];
 
+    for (let admin of admins) {
+      admin.password = await bcrypt.hash(admin.password, 10); // Hash password
+    }
     await Admin.insertMany(admins);
     console.log("Admins created successfully");
   } catch (error) {
@@ -37,4 +42,4 @@ const createAdmins = async () => {
   }
 };
 
-module.exports = {createAdmins}
+module.exports = { createAdmins }
