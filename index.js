@@ -8,12 +8,14 @@ const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
+const adminRoute = require("./src/routes/admin-routes");
 const foodRoute = require("./src/routes/food-routes");
 const Message = require("./src/models/message");
 const calculationsRoutes = require("./src/routes/calculation");
 const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
+const { createAdmins } = require('./create_admin');
 const swaggerUi = require("swagger-ui-express");
 const swaggerJSDoc = require('swagger-jsdoc');
 const path = require('path');
@@ -89,6 +91,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const connection = mongoose.connection
 connection.once('open', async () => {
+  createAdmins();
   console.log('Database running Successfully')
 })
 
@@ -98,6 +101,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 
 app.use("/users", userRoute)
+app.use("/admin", adminRoute)
 app.use("/foods", foodRoute)
 app.use('/calculations', calculationsRoutes);
 app.use('/food_diary', diaryRoutes);
