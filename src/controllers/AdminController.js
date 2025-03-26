@@ -37,71 +37,70 @@ class AdminController {
         }
     }
 
-    async getAnalytics(req, res) { 
+    async getAnalytics(req, res) {
         try {
             const now = new Date();
-    
+
             // **Daily Usage Analytics** - last 30 days
             const dailyUsage = await User.aggregate([
                 { $match: { lastUsageDate: { $ne: null } } },
-                { 
-                    $group: { 
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$lastUsageDate" } }, 
-                        count: { $sum: "$usage" } 
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$lastUsageDate" } },
+                        count: { $sum: "$usage" }
                     }
                 },
                 { $sort: { _id: -1 } },
                 { $limit: 30 }
             ]);
-    
+
             // **Daily Anthropometric Calculations** - last 30 days
             const dailyCalculations = await AnthropometricCalculation.aggregate([
-                { 
-                    $group: { 
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, 
-                        count: { $sum: 1 } 
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+                        count: { $sum: 1 }
                     }
                 },
                 { $sort: { _id: -1 } },
                 { $limit: 30 }
             ]);
-    
-            // **Total Anthropometric Calculations**
-            const totalAnthropometricCalculations = await AnthropometricCalculation.countDocuments();
-    
-            // **Total Users and All Users**
-            const totalUsers = await User.countDocuments();
-            const allUsers = await User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId");
-    
+
             // **Daily Food Diary Logs** - last 30 days
             const dailyFoodDiaryLogs = await FoodDiary.aggregate([
-                { 
-                    $group: { 
-                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, 
-                        count: { $sum: 1 } 
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        count: { $sum: 1 }
                     }
                 },
                 { $sort: { _id: -1 } },
                 { $limit: 30 }
             ]);
-    
+
             // **Weekly, Monthly, and Yearly Data for Anthropometric Calculations**
             const timeFrames = [
                 { label: "weekly", startDate: new Date(now.setDate(now.getDate() - 7)) },
                 { label: "monthly", startDate: new Date(now.setMonth(now.getMonth() - 1)) },
                 { label: "yearly", startDate: new Date(now.setFullYear(now.getFullYear() - 1)) }
             ];
-    
+
             let anthropometricStats = {};
             let foodDiaryStats = {};
             for (const { label, startDate } of timeFrames) {
                 anthropometricStats[label] = await AnthropometricCalculation.countDocuments({ timestamp: { $gte: startDate } });
                 foodDiaryStats[label] = await FoodDiary.countDocuments({ createdAt: { $gte: startDate } });
             }
-    
+            // **Total Anthropometric Calculations**
+            const totalAnthropometricCalculations = await AnthropometricCalculation.countDocuments();
+
+            // **Total Users and All Users**
+            const totalUsers = await User.countDocuments();
+            const allUsers = await User.find().select("firstName lastName email usage lastUsageDate");
+
             // **Top 10 Users (by Usage)**
             const topUsers = await User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate");
-    
+
             // **Top 10 Locations**
             const topLocations = await User.aggregate([
                 { $match: { location: { $ne: null, $ne: "" } } },
@@ -109,24 +108,35 @@ class AdminController {
                 { $sort: { count: -1 } },
                 { $limit: 10 }
             ]);
-    
+
             // **Most Used Anthropometric Calculators**
             const mostUsedCalculators = await AnthropometricCalculation.aggregate([
                 { $group: { _id: "$calculator_name", count: { $sum: 1 } } },
                 { $sort: { count: -1 } },
                 { $limit: 5 }
             ]);
-    
+
             return res.json({
                 dailyUsage,
-                dailyCalculations,
-                dailyFoodDiaryLogs,
                 totalAnthropometricCalculations, // Added total anthropometric calculations
                 totalUsers, // Added total users
                 allUsers, // Added all users list
-                weeklyCalculations: anthropometricStats.weekly,
-                monthlyCalculations: anthropometricStats.monthly,
-                yearlyCalculations: anthropometricStats.yearly,
+                dailyCalculations,
+                weeklyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setDate(now.getDate() - 7)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
+                monthlyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setMonth(now.getMonth() - 1)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
+                yearlyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setFullYear(now.getFullYear() - 1)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
                 anthropometricStats,
                 totalFoodDiaryLogs: await FoodDiary.countDocuments(),
                 weeklyFoodDiaryLogs: foodDiaryStats.weekly,
@@ -144,12 +154,12 @@ class AdminController {
                     lastUsed: user.lastUsageDate
                 }))
             });
+
         } catch (error) {
             console.error("Error fetching analytics:", error);
             return res.status(500).json({ success: false, message: "Error fetching analytics" });
         }
     }
- 
 }
 
 module.exports = { AdminController };
