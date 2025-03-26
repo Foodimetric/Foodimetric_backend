@@ -120,6 +120,7 @@ class AdminController {
             return res.json({
                 dailyUsage,
                 dailyCalculations,
+                dailyFoodDiaryLogs,
                 totalAnthropometricCalculations, // Added total anthropometric calculations
                 totalUsers, // Added total users
                 allUsers, // Added all users list
