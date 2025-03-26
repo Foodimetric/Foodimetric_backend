@@ -96,7 +96,7 @@ class AdminController {
 
             // **Total Users and All Users**
             const totalUsers = await User.countDocuments();
-            const allUsers = await User.find().select("firstName lastName email usage lastUsageDate");
+            const allUsers = await User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId");
 
             // **Top 10 Users (by Usage)**
             const topUsers = await User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate");
