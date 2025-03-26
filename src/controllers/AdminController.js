@@ -111,21 +111,56 @@ class AdminController {
             ]);
     
             // **Send Response**
+            // return res.json({
+            //     dailyUsage,
+            //     dailyCalculations,
+            //     dailyFoodDiaryLogs,
+            //     anthropometricStats,
+            //     foodDiaryStats,
+            //     totalFoodDiaryLogs: await FoodDiary.countDocuments(),
+            //     mostUsedCalculators: mostUsedCalculators.map(calc => ({ name: calc._id, count: calc.count })),
+            //     topUsers: topUsers.map(user => ({
+            //         name: `${user.firstName} ${user.lastName}`,
+            //         email: user.email,
+            //         usageCount: user.usage,
+            //         lastUsed: user.lastUsageDate
+            //     })),
+            //     topLocations: topLocations.map(loc => ({ name: loc._id, count: loc.count }))
+            // });
             return res.json({
                 dailyUsage,
                 dailyCalculations,
-                dailyFoodDiaryLogs,
+                weeklyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setDate(now.getDate() - 7)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
+                monthlyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setMonth(now.getMonth() - 1)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
+                yearlyCalculations: await AnthropometricCalculation.aggregate([
+                    { $match: { timestamp: { $gte: new Date(now.setFullYear(now.getFullYear() - 1)) } } },
+                    { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
+                    { $sort: { _id: -1 } }
+                ]),
                 anthropometricStats,
-                foodDiaryStats,
                 totalFoodDiaryLogs: await FoodDiary.countDocuments(),
-                mostUsedCalculators: mostUsedCalculators.map(calc => ({ name: calc._id, count: calc.count })),
+                weeklyFoodDiaryLogs: foodDiaryStats.weekly,
+                monthlyFoodDiaryLogs: foodDiaryStats.monthly,
+                yearlyFoodDiaryLogs: foodDiaryStats.yearly,
+                mostUsedCalculators: mostUsedCalculators.map(calc => ({
+                    name: calc._id,
+                    count: calc.count,
+                    trend: Math.random() * 100 // Replace this with an actual trend calculation
+                })),
                 topUsers: topUsers.map(user => ({
+                    id: user._id,
                     name: `${user.firstName} ${user.lastName}`,
-                    email: user.email,
                     usageCount: user.usage,
                     lastUsed: user.lastUsageDate
-                })),
-                topLocations: topLocations.map(loc => ({ name: loc._id, count: loc.count }))
+                }))
             });
     
         } catch (error) {
