@@ -41,6 +41,51 @@ class AdminController {
         try {
             const now = new Date();
 
+
+            // **Users Performing Anthropometric Calculations**
+            const userCalculations = await AnthropometricCalculation.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            user: "$userId",
+                            date: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }
+                        },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$_id.user",
+                        calculations: {
+                            $push: {
+                                date: "$_id.date",
+                                count: "$count"
+                            }
+                        },
+                        totalCalculations: { $sum: "$count" }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "userDetails"
+                    }
+                },
+                { $unwind: "$userDetails" },
+                {
+                    $project: {
+                        _id: 0,
+                        userId: "$userDetails._id",
+                        name: { $concat: ["$userDetails.firstName", " ", "$userDetails.lastName"] },
+                        totalCalculations: 1,
+                        calculations: 1
+                    }
+                },
+                { $sort: { totalCalculations: -1 } } // Sort by most calculations
+            ]);
+
             // **Daily Usage Analytics** - last 30 days
             const dailyUsage = await User.aggregate([
                 { $match: { lastUsageDate: { $ne: null } } },
@@ -117,6 +162,7 @@ class AdminController {
             ]);
 
             return res.json({
+                userCalculations,
                 dailyUsage,
                 totalAnthropometricCalculations, // Added total anthropometric calculations
                 totalUsers, // Added total users
