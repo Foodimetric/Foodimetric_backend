@@ -47,7 +47,7 @@ class AdminController {
                 {
                     $group: {
                         _id: {
-                            user: "$userId",
+                            user: "$user_id", // Fix: Ensure it's "user_id" not "userId"
                             date: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }
                         },
                         count: { $sum: 1 }
@@ -83,8 +83,8 @@ class AdminController {
                         calculations: 1
                     }
                 },
-                { $sort: { totalCalculations: -1 } } // Sort by most calculations
-            ]);
+                { $sort: { totalCalculations: -1 } }
+            ]);            
 
             // **Daily Usage Analytics** - last 30 days
             const dailyUsage = await User.aggregate([
