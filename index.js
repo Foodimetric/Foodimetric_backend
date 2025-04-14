@@ -8,6 +8,7 @@ const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
+const chatRoute = require("./src/routes/chatBot-routes");
 const adminRoute = require("./src/routes/admin-routes");
 const foodRoute = require("./src/routes/food-routes");
 const Message = require("./src/models/message");
@@ -110,25 +111,8 @@ app.get("/add-data", (req, res) => {
   res.json("Done")
 })
 
-const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat"; // Python API
-
 // REST API Endpoint for Chat
-app.post("/chat", async (req, res) => {
-  const { text, user_id } = req.body;
-
-  try {
-    await Message.create({ user_id, text });
-    const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
-    res.json(response.data);
-  } catch (error) {
-    console.error("Error communicating with NutriBot API:", error.response?.data || error.message);
-
-    res.status(500).json({
-      error: "Error communicating with NutriBot API",
-      details: error.response?.data || error.message, // Provide more context
-    });
-  }
-});
+app.post("/bot", chatRoute);
 
 // WebSocket for real-time chat
 io.on("connection", (socket) => {
