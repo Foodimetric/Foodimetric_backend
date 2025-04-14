@@ -5,9 +5,9 @@ const redis = require("../utils/redis"); // import Redis client
 
 const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat";
 
-const PER_MINUTE_LIMIT = 5; // RPM
+const PER_MINUTE_LIMIT = 2; // RPM
 const PER_DAY_LIMIT = 100; // RPD
-const PER_MINUTE_TOKEN_LIMIT = 500; // TPM (example)
+const PER_MINUTE_TOKEN_LIMIT = 1000; // TPM (example)
 
 class ChatController {
     async chat(req, res) {
