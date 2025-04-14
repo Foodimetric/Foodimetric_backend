@@ -112,7 +112,7 @@ app.get("/add-data", (req, res) => {
 })
 
 // REST API Endpoint for Chat
-app.post("/bot", chatRoute);
+app.use("/bot", chatRoute);
 
 // WebSocket for real-time chat
 io.on("connection", (socket) => {
