@@ -8,6 +8,7 @@ const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
+const payRoute = require("./src/routes/payment-routes");
 const chatRoute = require("./src/routes/chatBot-routes");
 const adminRoute = require("./src/routes/admin-routes");
 const foodRoute = require("./src/routes/food-routes");
@@ -104,6 +105,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 app.use("/users", userRoute)
 app.use("/admin", adminRoute)
 app.use("/foods", foodRoute)
+app.use("/payment", payRoute)
 app.use('/calculations', calculationsRoutes);
 app.use('/food_diary', diaryRoutes);
 app.get("/add-data", (req, res) => {

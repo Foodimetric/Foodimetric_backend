@@ -41,6 +41,16 @@ class AdminController {
         try {
             const now = new Date();
 
+            const weeklyStart = new Date();
+            weeklyStart.setDate(now.getDate() - 7);
+
+            const monthlyStart = new Date();
+            monthlyStart.setMonth(now.getMonth() - 1);
+
+            const yearlyStart = new Date();
+            yearlyStart.setFullYear(now.getFullYear() - 1);
+
+
 
             // **Users Performing Anthropometric Calculations**
             const userCalculations = await AnthropometricCalculation.aggregate([
@@ -84,7 +94,19 @@ class AdminController {
                     }
                 },
                 { $sort: { totalCalculations: -1 } }
-            ]);            
+            ]);
+
+            // **Daily Signup Rate** - last 30 days
+            const dailySignups = await User.aggregate([
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        count: { $sum: 1 }
+                    }
+                },
+                { $sort: { _id: -1 } },
+                { $limit: 30 }
+            ]);
 
             // **Daily Usage Analytics** - last 30 days
             const dailyUsage = await User.aggregate([
@@ -162,6 +184,7 @@ class AdminController {
             ]);
 
             return res.json({
+                dailySignups,
                 userCalculations,
                 dailyUsage,
                 totalAnthropometricCalculations, // Added total anthropometric calculations
@@ -169,17 +192,17 @@ class AdminController {
                 allUsers, // Added all users list
                 dailyCalculations,
                 weeklyCalculations: await AnthropometricCalculation.aggregate([
-                    { $match: { timestamp: { $gte: new Date(now.setDate(now.getDate() - 7)) } } },
+                    { $match: { timestamp: { $gte: weeklyStart} } },
                     { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
                     { $sort: { _id: -1 } }
                 ]),
                 monthlyCalculations: await AnthropometricCalculation.aggregate([
-                    { $match: { timestamp: { $gte: new Date(now.setMonth(now.getMonth() - 1)) } } },
+                    { $match: { timestamp: { $gte: monthlyStart} } },
                     { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
                     { $sort: { _id: -1 } }
                 ]),
                 yearlyCalculations: await AnthropometricCalculation.aggregate([
-                    { $match: { timestamp: { $gte: new Date(now.setFullYear(now.getFullYear() - 1)) } } },
+                    { $match: { timestamp: { $gte: yearlyStart } } },
                     { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } }, count: { $sum: 1 } } },
                     { $sort: { _id: -1 } }
                 ]),
