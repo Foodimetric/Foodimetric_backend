@@ -355,27 +355,25 @@ class AdminController {
                 };
             };
 
-            const usedCalculators = await AnthropometricCalculation.aggregate([
-                { $group: { _id: "$calculator_name", count: { $sum: 1 } } },
-                { $sort: { count: -1 } },
-                { $limit: 5 }
-            ]);
 
             const [
                 userCalculations,
                 dailySignups,
                 dailyUsage,
                 dailyCalculations,
-                anthropometricStats,
                 dailyFoodDiaryLogs,
+                anthropometricStats,
                 foodDiaryStats,
-                totalFoodDiaryLogs,
                 totalAnthropometricCalculations,
                 totalUsers,
                 allUsers,
                 topUsers,
                 topLocations,
                 mostUsedCalculators,
+                weeklyCalculationsRaw,
+                monthlyCalculationsRaw,
+                yearlyCalculationsRaw,
+                totalFoodDiaryLogs
             ] = await Promise.all([
                 // Users performing calculations
                 AnthropometricCalculation.aggregate([
@@ -483,7 +481,7 @@ class AdminController {
                 foodDiaryStats,
 
                 // Calculators
-                mostUsedCalculators: usedCalculators.map(calc => ({
+                mostUsedCalculators: mostUsedCalculators.map(calc => ({
                     name: calc._id,
                     count: calc.count,
                     trend: null // TODO: replace with real trend logic
