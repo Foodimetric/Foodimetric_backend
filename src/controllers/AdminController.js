@@ -263,10 +263,7 @@ function getAnalyticsBreakdown(dailyCalculations) {
         // ---------- Weekly Grouping ----------
         const startOfWeek = date.clone().startOf('isoWeek');
         const endOfWeek = date.clone().endOf('isoWeek');
-        const weekNumber = date.isoWeek();
-        const weekKey = `Week ${weekNumber} (${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year})`;
-
-        // const weekKey = `${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year}`;
+        const weekKey = `${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year}`;
 
         if (!weeklyMap.has(weekKey)) {
             weeklyMap.set(weekKey, 0);
@@ -357,8 +354,6 @@ class AdminController {
                     yearly: await Model.countDocuments({ [dateField]: { $gte: dateNYearsAgo(1) } }),
                 };
             };
-            const foodDiaryDailyCounts = await getDailyCounts(FoodDiary, "createdAt", 365);
-            const foodDiaryBreakdown = getAnalyticsBreakdown(foodDiaryDailyCounts);
 
             const [
                 userCalculations,
@@ -367,6 +362,7 @@ class AdminController {
                 dailyCalculations,
                 anthropometricStats,
                 dailyFoodDiaryLogs,
+                foodDiaryStats,
                 totalFoodDiaryLogs,
                 totalAnthropometricCalculations,
                 totalUsers,
@@ -413,8 +409,6 @@ class AdminController {
                     },
                     { $sort: { totalCalculations: -1 } }
                 ]),
-                getDailyCounts(FoodDiary, "createdAt", 30), // dailyFoodDiaryLogs
-                FoodDiary.countDocuments(), // totalFoodDiaryLogs (make sure this is the correct line now)
                 getDailyCounts(User, "createdAt"),
                 User.aggregate([
                     { $match: { lastUsageDate: { $ne: null } } },
@@ -434,8 +428,7 @@ class AdminController {
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
                 User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId"),
-                // User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate"),
-                User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate").exec(),
+                User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate"),
                 User.aggregate([
                     { $match: { location: { $ne: null, $ne: "" } } },
                     { $group: { _id: "$location", count: { $sum: 1 } } },
@@ -481,7 +474,7 @@ class AdminController {
 
                 // Summary stats
                 anthropometricStats,
-                foodDiaryStats: foodDiaryBreakdown,
+                foodDiaryStats,
 
                 // Calculators
                 mostUsedCalculators: mostUsedCalculators.map(calc => ({
