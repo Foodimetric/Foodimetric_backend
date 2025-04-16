@@ -263,7 +263,10 @@ function getAnalyticsBreakdown(dailyCalculations) {
         // ---------- Weekly Grouping ----------
         const startOfWeek = date.clone().startOf('isoWeek');
         const endOfWeek = date.clone().endOf('isoWeek');
-        const weekKey = `${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year}`;
+        const weekNumber = date.isoWeek();
+        const weekKey = `Week ${weekNumber} (${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year})`;
+
+        // const weekKey = `${startOfWeek.format('MMM D')}–${endOfWeek.format('MMM D')}, ${year}`;
 
         if (!weeklyMap.has(weekKey)) {
             weeklyMap.set(weekKey, 0);
@@ -354,25 +357,23 @@ class AdminController {
                     yearly: await Model.countDocuments({ [dateField]: { $gte: dateNYearsAgo(1) } }),
                 };
             };
+            const foodDiaryDailyCounts = await getDailyCounts(FoodDiary, "createdAt", 365);
+            const foodDiaryBreakdown = getAnalyticsBreakdown(foodDiaryDailyCounts);
 
             const [
                 userCalculations,
                 dailySignups,
                 dailyUsage,
                 dailyCalculations,
-                dailyFoodDiaryLogs,
                 anthropometricStats,
-                foodDiaryStats,
+                dailyFoodDiaryLogs,
+                totalFoodDiaryLogs,
                 totalAnthropometricCalculations,
                 totalUsers,
                 allUsers,
                 topUsers,
                 topLocations,
                 mostUsedCalculators,
-                // weeklyCalculations,
-                // monthlyCalculations,
-                // yearlyCalculations,
-                totalFoodDiaryLogs,
             ] = await Promise.all([
                 // Users performing calculations
                 AnthropometricCalculation.aggregate([
@@ -412,6 +413,8 @@ class AdminController {
                     },
                     { $sort: { totalCalculations: -1 } }
                 ]),
+                getDailyCounts(FoodDiary, "createdAt", 30), // dailyFoodDiaryLogs
+                FoodDiary.countDocuments(), // totalFoodDiaryLogs (make sure this is the correct line now)
                 getDailyCounts(User, "createdAt"),
                 User.aggregate([
                     { $match: { lastUsageDate: { $ne: null } } },
@@ -477,7 +480,7 @@ class AdminController {
 
                 // Summary stats
                 anthropometricStats,
-                foodDiaryStats,
+                foodDiaryStats: foodDiaryBreakdown,
 
                 // Calculators
                 mostUsedCalculators: mostUsedCalculators.map(calc => ({
