@@ -434,7 +434,8 @@ class AdminController {
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
                 User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId"),
-                User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate"),
+                // User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate"),
+                User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate").exec(),
                 User.aggregate([
                     { $match: { location: { $ne: null, $ne: "" } } },
                     { $group: { _id: "$location", count: { $sum: 1 } } },
