@@ -361,7 +361,7 @@ class AdminController {
                 dailySignups,
                 dailyUsage,
                 dailyCalculations,
-                rawDailyFoodDiaryLogs,,
+                rawDailyFoodDiaryLogs,
                 anthropometricStats,
                 rawFoodDiaryStats,
                 totalAnthropometricCalculations,
@@ -478,7 +478,7 @@ class AdminController {
                 dailySignups,
                 dailyUsage,
                 dailyCalculations,
-                dailyFoodDiaryLogs,
+                // dailyFoodDiaryLogs,
 
                 // Time frame analytics
                 weeklyCalculations,
