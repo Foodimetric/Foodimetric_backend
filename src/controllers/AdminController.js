@@ -419,12 +419,12 @@ class AdminController {
                     {
                         $group: {
                             _id: { $dateToString: { format: "%Y-%m-%d", date: "$lastUsageDate" } },
-                            count: { $sum: "$usage" }
+                            count: { $sum: 1 } // Just count the number of users per date
                         }
                     },
                     { $sort: { _id: -1 } },
                     { $limit: 30 }
-                ]),
+                ]),                
                 getDailyCounts(AnthropometricCalculation, "timestamp"),
                 getDailyCounts(FoodDiary, "createdAt"),
                 getTimeFrameCounts(AnthropometricCalculation, "timestamp"),
