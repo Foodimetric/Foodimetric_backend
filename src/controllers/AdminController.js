@@ -361,9 +361,9 @@ class AdminController {
                 dailySignups,
                 dailyUsage,
                 dailyCalculations,
-                dailyFoodDiaryLogs,
+                rawDailyFoodDiaryLogs,,
                 anthropometricStats,
-                foodDiaryStats,
+                rawFoodDiaryStats,
                 totalAnthropometricCalculations,
                 totalUsers,
                 allUsers,
@@ -450,6 +450,15 @@ class AdminController {
                 FoodDiary.countDocuments(),
             ]);
             const { weeklyCalculations, monthlyCalculations, yearlyCalculations } = getAnalyticsBreakdown(dailyCalculations);
+            const { weeklyCalculations: weeklyFoodLogs, monthlyCalculations: monthlyFoodLogs, yearlyCalculations: yearlyFoodLogs } = getAnalyticsBreakdown(rawDailyFoodDiaryLogs);
+
+            const foodDiaryStats = {
+                daily: rawDailyFoodDiaryLogs.reverse(), // Keep most recent last
+                weekly: weeklyFoodLogs,
+                monthly: monthlyFoodLogs,
+                yearly: yearlyFoodLogs,
+            };
+
             return res.json({
                 totalUsers,
                 totalAnthropometricCalculations,
