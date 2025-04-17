@@ -139,7 +139,7 @@ class AdminController {
                             userId: "$userDetails._id",
                             name: { $concat: ["$userDetails.firstName", " ", "$userDetails.lastName"] },
                             totalCalculations: "$totalCalculations",
-                            calculations
+                            calculations: "$calculations"
                         }
                     },
                     { $sort: { totalCalculations: -1 } }
