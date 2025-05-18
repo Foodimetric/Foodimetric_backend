@@ -7,6 +7,8 @@ const User = require("../models/user.models");
 const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
+const Newsletter = require("../models/newsletter-subscription.model.js");
+
 
 function getAnalyticsBreakdown(dailyCalculations) {
     const weeklyMap = new Map();
@@ -83,7 +85,7 @@ class AdminController {
                         }
                     },
                     { $sort: { _id: -1 } },
-                    // { $limit: limit }
+                    { $limit: limit }
                 ]);
             };
 
@@ -180,6 +182,8 @@ class AdminController {
 
             const { weeklyCalculations, monthlyCalculations, yearlyCalculations } = getAnalyticsBreakdown(dailyCalculations);
             const { weeklyCalculations: weeklyFoodLogs, monthlyCalculations: monthlyFoodLogs, yearlyCalculations: yearlyFoodLogs } = getAnalyticsBreakdown(rawDailyFoodDiaryLogs);
+            const newsletterSubscribers = Newsletter.find().sort({ createdAt: -1 }).select("email createdAt")
+
 
             return res.json({
                 totalUsers,
@@ -216,7 +220,8 @@ class AdminController {
                     name: calc._id,
                     count: calc.count,
                     trend: null
-                }))
+                })),
+                newsletterSubscribers
             });
 
         } catch (error) {

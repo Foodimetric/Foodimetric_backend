@@ -18,6 +18,7 @@ const userModel = new Schema({
     lastUsageDate: { type: Date, default: null },
     location: { type: String, required: false },  // New location field
     profilePicture: { type: String, required: false, default: null },
+    subscriptionStatus:{ type: String, required: false, default: null },
 },
 {
     timestamps: true
