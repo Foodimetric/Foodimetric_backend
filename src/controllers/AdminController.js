@@ -183,7 +183,7 @@ class AdminController {
             const { weeklyCalculations, monthlyCalculations, yearlyCalculations } = getAnalyticsBreakdown(dailyCalculations);
             const { weeklyCalculations: weeklyFoodLogs, monthlyCalculations: monthlyFoodLogs, yearlyCalculations: yearlyFoodLogs } = getAnalyticsBreakdown(rawDailyFoodDiaryLogs);
             // const newsletterSubscribers = Newsletter.find().sort({ createdAt: -1 }).select("email createdAt")
-            const newsletterSubscribers = Newsletter.find()
+            const newsletterSubscribers = await Newsletter.find()
                 .sort({ createdAt: -1 })
                 .select("email createdAt")
                 .lean()
