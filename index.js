@@ -127,7 +127,7 @@ io.on("connection", (socket) => {
       const response = await axios.post(NUTRIBOT_API_URL, { text, user_id });
       socket.emit("chat_response", response.data);
     } catch (error) {
-      socket.emit("error", { error: "Failed to connect to NutriBot API" });
+      socket.emit("error", { error: "Failed to connect to Foodimetric-AI API" });
     }
   });
 

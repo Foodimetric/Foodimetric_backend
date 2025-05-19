@@ -56,9 +56,9 @@ class ChatController {
 
             return res.json(response.data);
         } catch (error) {
-            console.error("Error communicating with NutriBot API:", error.response?.data || error.message);
+            console.error("Error communicating with Foodimetric-AI API:", error.response?.data || error.message);
             return res.status(500).json({
-                error: "Error communicating with NutriBot API",
+                error: "Error communicating with Foodimetric-AI API",
                 details: error.response?.data || error.message,
             });
         }
