@@ -7,7 +7,7 @@ const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat";
 
 const PER_MINUTE_LIMIT = 2; // RPM
 const PER_DAY_LIMIT = 40; // RPD
-const PER_MINUTE_TOKEN_LIMIT = 1000; // TPM (example)
+const PER_MINUTE_TOKEN_LIMIT = 700; // TPM (example)
 
 class ChatController {
     async chat(req, res) {
