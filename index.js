@@ -100,6 +100,17 @@ connection.once('open', async () => {
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
+// Ping every 7 minutes (420,000 ms)
+setInterval(async () => {
+  try {
+    const response = await axios.get('https://foodimetric-bot.onrender.com/');
+    console.log(`Pinged bot, status: ${response.status}`);
+  } catch (err) {
+    console.error('Ping failed:', err.message);
+  }
+}, 420000);
+
+
 app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 
 app.use("/users", userRoute)
