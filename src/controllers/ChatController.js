@@ -6,7 +6,7 @@ const redis = require("../utils/redis"); // import Redis client
 const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat";
 
 const PER_MINUTE_LIMIT = 2; // RPM
-const PER_DAY_LIMIT = 100; // RPD
+const PER_DAY_LIMIT = 40; // RPD
 const PER_MINUTE_TOKEN_LIMIT = 1000; // TPM (example)
 
 class ChatController {
@@ -41,7 +41,16 @@ class ChatController {
             }
 
             if (rpd > PER_DAY_LIMIT) {
-                return res.status(429).json({ error: "Daily request limit (RPD) reached." });
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setUTCHours(0, 0, 0, 0);
+                tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+                const resetTime = tomorrow.toISOString().split("T")[1].split(".")[0]; // "00:00:00"
+                return res.status(429).json({
+                    error: "Daily request limit (RPD) reached.",
+                    message: `You’ve reached the daily limit for Foodimetric AI. You can continue chatting again after midnight UTC (00:00:00).`,
+                    reset_time_utc: resetTime
+                });
             }
 
             if (tpm > PER_MINUTE_TOKEN_LIMIT) {
