@@ -5,7 +5,7 @@ const redis = require("../utils/redis"); // import Redis client
 
 const NUTRIBOT_API_URL = "https://foodimetric-bot.onrender.com/api/chat";
 
-const PER_MINUTE_LIMIT = 2; // RPM
+const PER_MINUTE_LIMIT = 3; // RPM
 const PER_DAY_LIMIT = 40; // RPD
 const PER_MINUTE_TOKEN_LIMIT = 700; // TPM (example)
 
