@@ -57,7 +57,7 @@ route.post("/analytics", requireLogin, userController.saveAnalytics)
 route.get("/user/:id", userController.getUserById)
 route.patch("/update-profile", requireLogin, upload.single('profilePicture'), userController.updateProfile)
 route.get("/verify-user/:token", userController.verifyUser)
-route.get("/verify-user", userController.verifyUser)
+route.post("/verify-user", userController.verifyUser)
 route.get("/users/emails", userController.getAllUserEmails);
 route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe(req, res));
 route.delete("/users/delete", requireLogin, (req, res) => userController.deleteAccount(req, res));
