@@ -109,7 +109,7 @@ class UserController {
             if (email) {
                 let result = await userRepository.resendVerificationEmail(email);
                 if (!result) {
-                    return certainRespondMessage(res, null, "Email not found", 400);
+                    return certainRespondMessage(res, null, "User not found,Kindly check your email", 400);
                 }
                 return certainRespondMessage(res, null, result.message, 200);
             }
