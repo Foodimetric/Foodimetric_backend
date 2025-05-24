@@ -111,7 +111,7 @@ class UserController {
                 if (!result) {
                     return certainRespondMessage(res, null, "Email not found", 400);
                 }
-                return certainRespondMessage(res, null, "Verification email sent", 200);
+                return certainRespondMessage(res, null, result.message, 200);
             }
 
             // Neither token nor email present
