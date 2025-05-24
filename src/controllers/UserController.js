@@ -73,22 +73,53 @@ class UserController {
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
+    // async verifyUser(req, res) {
+    //     try {
+    //         const { token } = req.params;
+    //         if (!token) {
+    //             certainRespondMessage(res, null, "No Token Parsed", 400)
+    //         }
+    //         let result = await userRepository.verifyUser(token);
+    //         if (!result) {
+    //             certainRespondMessage(res, null, "Invalid Token", 400)
+    //         }
+    //         certainRespondMessage(res, result.payload, result.message, 200)
+    //     }
+    //     catch (err) {
+    //         certainRespondMessage(res, null, err.message, err.status)
+    //     }
+
+    // }
+
     async verifyUser(req, res) {
         try {
-            const { token } = req.params;
-            if (!token) {
-                certainRespondMessage(res, null, "No Token Parsed", 400)
-            }
-            let result = await userRepository.verifyUser(token);
-            if (!result) {
-                certainRespondMessage(res, null, "Invalid Token", 400)
-            }
-            certainRespondMessage(res, result.payload, result.message, 200)
-        }
-        catch (err) {
-            certainRespondMessage(res, null, err.message, err.status)
-        }
+            const { token } = req.params; // assuming /verify/:token
+            const { email } = req.body;   // or req.query, depending on how the form submits
 
+            // If token is present, verify with token
+            if (token) {
+                let result = await userRepository.verifyUser(token);
+                if (!result) {
+                    return certainRespondMessage(res, null, "Invalid Token", 400);
+                }
+                return certainRespondMessage(res, result.payload, result.message, 200);
+            }
+
+            // If email is present (no token), resend verification email
+            if (email) {
+                let result = await userRepository.resendVerificationEmail(email);
+                if (!result) {
+                    return certainRespondMessage(res, null, "Email not found", 400);
+                }
+                return certainRespondMessage(res, null, "Verification email sent", 200);
+            }
+
+            // Neither token nor email present
+            return certainRespondMessage(res, null, "No Token or Email Provided", 400);
+
+        } catch (err) {
+            certainRespondMessage(res, null, err.message, err.status || 500);
+        }
     }
 
     async getAllUserEmails(req, res) {
@@ -256,7 +287,7 @@ class UserController {
     async contact(req, res) {
         try {
             const { name, email, address, service, note } = req.body;
-    
+
             if (!name || !email || !address || !service || !note) {
                 return certainRespondMessage(res, null, "All fields are required", 400);
             }
@@ -280,8 +311,8 @@ class UserController {
                     <p><strong>Service:</strong> ${service}</p>
                     <p><strong>Message:</strong> ${note}</p>
                 `
-            };    
-    
+            };
+
             // Example: Save to the database (if you have a Contact model)
             const contactMessage = new Contact({ name, email, address, service, note });
             await contactMessage.save();
@@ -292,7 +323,7 @@ class UserController {
             console.error("Error in contact function:", error); // Log the error
             return certainRespondMessage(res, null, `Failed to send message: ${error.message}`, 500);
         }
-    } 
+    }
 }
 
 

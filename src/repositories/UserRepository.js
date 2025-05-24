@@ -114,6 +114,25 @@ class UserRepository {
       payload: user,
     };
   }
+
+  async resendVerificationEmail(email) {
+    let user = await this.Model.findOne({ email });
+    if (!user) return null;  // No user found with that email
+
+    if (user.isVerified) {
+      // User already verified, no need to resend
+      return { message: "User already verified" };
+    }
+
+    // Generate a new token for verification
+    const token = jwt.sign({ _id: user._id }, jwt_secret, { expiresIn: '1d' }); // optional expiry for security
+
+    // Send verification email again
+    await emailService.sendSignUpDetails(user.email, token);
+
+    return { message: "Verification email resent" };
+  }
+
   async getAllUserEmails() {
     try {
       const users = await this.Model.find({}, "email firstName");  // Fetch only the email field
@@ -150,7 +169,7 @@ class UserRepository {
       };
     }
   }
-  
+
   async getUserByEmail(email) {
     return await this.Model.findOne({ email });
   }
