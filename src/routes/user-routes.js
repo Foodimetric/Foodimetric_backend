@@ -107,5 +107,6 @@ route.post("/forgot-password", (req, res) => userController.forgotPassword(req, 
 
 // Reset Password
 route.post("/reset-password", (req, res) => userController.resetPassword(req, res))
+route.post("/deduct-credit", requireLogin, userController.deductCredit);
 
 module.exports = route

@@ -72,7 +72,33 @@ class UserController {
         let result = await userRepository.editProfile(update, user)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
+    async deductCredit(req, res) {
+        try {
+            const userId = req.user._id;
+            const user = await User.findById(userId);
 
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            if (user.credits <= 0) {
+                return res.status(400).json({ message: "Insufficient credits" });
+            }
+
+            user.credits -= 1;
+            await user.save();
+
+            return res.status(200).json({
+                message: "1 credit deducted successfully",
+                remainingCredits: user.credits
+            });
+        } catch (error) {
+            return res.status(500).json({
+                message: "Error deducting credit",
+                error: error.message
+            });
+        }
+    }
     async verifyUser(req, res) {
         try {
             const { token } = req.params; // assuming /verify/:token
