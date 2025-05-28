@@ -15,7 +15,11 @@ const userModel = new Schema({
     },
     isVerified: { type: Boolean, required: false, default: false },
     usage: { type: Number, default: 0 },
-    credits: { type: Number, default: 0 },
+    credits: {
+        type: Number,
+        default: 0,
+        min: [0, 'Credits cannot be negative']
+    },
     lastUsageDate: { type: Date, default: null },
     location: { type: String, required: false },  // New location field
     profilePicture: { type: String, required: false, default: null },
