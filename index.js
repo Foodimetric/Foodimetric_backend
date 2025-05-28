@@ -18,6 +18,7 @@ const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
 const { createAdmins } = require('./create_admin');
+const { creditUsers } = require('./credit_verified_users');
 const swaggerUi = require("swagger-ui-express");
 const swaggerJSDoc = require('swagger-jsdoc');
 const path = require('path');
@@ -94,6 +95,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection
 connection.once('open', async () => {
   // createAdmins();
+  await creditUsers();
   console.log('Database running Successfully')
 })
 

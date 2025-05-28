@@ -73,24 +73,6 @@ class UserController {
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
-    // async verifyUser(req, res) {
-    //     try {
-    //         const { token } = req.params;
-    //         if (!token) {
-    //             certainRespondMessage(res, null, "No Token Parsed", 400)
-    //         }
-    //         let result = await userRepository.verifyUser(token);
-    //         if (!result) {
-    //             certainRespondMessage(res, null, "Invalid Token", 400)
-    //         }
-    //         certainRespondMessage(res, result.payload, result.message, 200)
-    //     }
-    //     catch (err) {
-    //         certainRespondMessage(res, null, err.message, err.status)
-    //     }
-
-    // }
-
     async verifyUser(req, res) {
         try {
             const { token } = req.params; // assuming /verify/:token
@@ -142,35 +124,6 @@ class UserController {
         }
     }
 
-    // async signUpWithGoogle(profile) {
-    //     const { id, displayName, emails } = profile; // Google profile details
-
-    //     try {
-    //         // Check if user already exists
-    //         let user = await User.findOne({ googleId: id });
-
-    //         if (!user) {
-    //             user = new User({
-    //                 email: emails[0].value,
-    //                 googleId: id,
-    //                 firstName: displayName.split(" ")[0] || "", // Extract first name
-    //                 lastName: displayName.split(" ")[1] || "", // Extract last name (if available)
-    //                 password: null, // No password for Google users
-    //                 category: 0, // Default category
-    //                 isVerified: true, // Mark Google users as verified
-    //             });
-
-    //             user = await user.save(); // Save the new user
-    //         }
-
-    //         return {
-    //             message: "Google Sign-Up Successful",
-    //             payload: user,
-    //         };
-    //     } catch (error) {
-    //         throw new Error("Error during Google Sign-Up: " + error.message);
-    //     }
-    // }
 
     async forgotPassword(req, res) {
         try {
@@ -325,9 +278,6 @@ class UserController {
         }
     }
 }
-
-
-
 
 module.exports = {
     UserController

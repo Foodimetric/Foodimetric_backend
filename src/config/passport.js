@@ -20,10 +20,11 @@ passport.use(
                     if (!user.googleId) {
                         user.googleId = profile.id;
                         user.profilePicture = profile.photos[0]?.value || ""
+                        user.isVerified = true
                         await user.save();
                     }
                     return done(null, user);
-                } 
+                }
 
                 console.log("⚡ New user, creating entry in DB...");
                 // Create a new user if no account exists
@@ -35,7 +36,8 @@ passport.use(
                     googleId: profile.id,
                     password: null, // No password for Google users
                     category: 0,
-                    isVerified: true
+                    isVerified: true,
+                    credits: 100
                 });
 
                 await user.save();
