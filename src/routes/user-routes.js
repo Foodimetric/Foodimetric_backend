@@ -88,7 +88,8 @@ route.get(
             category: req.user.category,
             location: req.user.location,
             createdAt: req.user.createdAt,
-            profilePicture: req.user.profilePicture || ''
+            profilePicture: req.user.profilePicture || '',
+            credits: req.user.credits
         };
 
         // ✅ Redirect with query params
