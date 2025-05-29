@@ -164,7 +164,7 @@ class AdminController {
                 getTimeFrameCounts(AnthropometricCalculation, "timestamp"),
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
-                User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId"),
+                User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId credits"),
                 User.find().sort({ usage: -1 }).limit(10).select("firstName lastName email usage lastUsageDate"),
                 User.aggregate([
                     { $match: { location: { $ne: null, $ne: "" } } },
