@@ -106,7 +106,7 @@ class UserRepository {
 
     let user = await this.Model.findById(_id);
     user.isVerified = true;
-    user.credits = 100;
+    user.credits = 1000;
     user = await this.editProfile(user, user);
     console.log(user);
 

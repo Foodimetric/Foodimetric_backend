@@ -7,7 +7,7 @@ const creditUsers = async () => {
 
         const updated = await User.updateMany(
             { isVerified: true },
-            { $set: { credits: 100 } }
+            { $set: { credits: 1000 } }
         );
         console.log(`Updated ${updated.modifiedCount} users.`);
     } catch (error) {

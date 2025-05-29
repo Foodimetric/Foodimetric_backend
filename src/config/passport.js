@@ -37,7 +37,7 @@ passport.use(
                     password: null, // No password for Google users
                     category: 0,
                     isVerified: true,
-                    credits: 100
+                    credits: 1000
                 });
 
                 await user.save();
