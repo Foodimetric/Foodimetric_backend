@@ -95,7 +95,7 @@ mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const connection = mongoose.connection
 connection.once('open', async () => {
   // createAdmins();
-  await creditUsers();
+  // await creditUsers();
   console.log('Database running Successfully')
 })
 

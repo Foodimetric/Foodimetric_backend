@@ -8,6 +8,7 @@ const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
 const Newsletter = require("../models/newsletter-subscription.model.js");
+const { creditUsers } = require('../../credit_verified_users.js');
 
 
 function getAnalyticsBreakdown(dailyCalculations) {
@@ -229,6 +230,10 @@ class AdminController {
             console.error("Error fetching analytics:", error);
             return res.status(500).json({ success: false, message: "Error fetching analytics" });
         }
+    }
+
+    async creditVerifiedUsers(req, res) {
+        await creditUsers()
     }
 }
 
