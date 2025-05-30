@@ -10,8 +10,10 @@ const creditUsers = async () => {
             { $set: { credits: 1000 } }
         );
         console.log(`Updated ${updated.modifiedCount} users.`);
+        return updated;
     } catch (error) {
         console.error("Error updating credit to Users:", error);
+        throw error;
     }
 
 }

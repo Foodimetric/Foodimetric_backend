@@ -233,7 +233,17 @@ class AdminController {
     }
 
     async creditVerifiedUsers(req, res) {
-        await creditUsers()
+        try {
+            const updated = await creditUsers();
+            res.status(200).json({
+                message: `Successfully reset credits to 1000 for ${updated.modifiedCount} verified users.`,
+            });
+        } catch (error) {
+            console.error("Error resetting credits:", error);
+            res.status(500).json({
+                error: "Failed to reset credits. Please try again.",
+            });
+        }
     }
 }
 
