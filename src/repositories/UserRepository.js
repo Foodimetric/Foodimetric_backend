@@ -2,11 +2,14 @@ const User = require("../models/user.models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { EmailService } = require("../services/EmailServices");
+const { WelcomeEmailService } = require("../services/WelcomeEmailServices");
+
 require("dotenv").config();
 
 const jwt_secret = process.env.JWT_SECRET;
 
 const emailService = new EmailService();
+const welcomeEmailService = new WelcomeEmailService();
 
 class UserRepository {
   constructor() {
@@ -109,6 +112,7 @@ class UserRepository {
     user.credits = 1000;
     user = await this.editProfile(user, user);
     console.log(user);
+    await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
 
     return {
       message: "Successful",

@@ -1,7 +1,10 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user.models"); // Your User model
+const { WelcomeEmailService } = require("../services/WelcomeEmailServices");
 
+
+const welcomeEmailService = new WelcomeEmailService();
 passport.use(
     new GoogleStrategy(
         {
@@ -41,6 +44,7 @@ passport.use(
                 });
 
                 await user.save();
+                await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
                 return done(null, user);
             } catch (err) {
                 console.error("❌ Error in Google OAuth Strategy:", err);
