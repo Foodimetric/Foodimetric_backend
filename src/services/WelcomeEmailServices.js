@@ -98,7 +98,7 @@ const welcomeHtml = (name = "there") => `
                             <li><a href="https://foodimetric.com/search/nutrient" style="color:#147e03;">Nutrient Search</a> – Explore foods by nutrient</li>
                             <li><a href="https://foodimetric.com/search/multi-food" style="color:#147e03;">Multi-Food Search</a> – Analyze multiple foods at once</li>
                             <li><a href="https://foodimetric.com/search/multi-nutrient" style="color:#147e03;">Multi-Nutrient Search</a> – Compare nutrient values easily</li>
-                            <li><a href="https://foodimetric.com/ai/personalized" style="color:#147e03;">Personalized AI</a> – Get food tips tailored to your goals</li>
+                            <li><a href="https://foodimetric.com/chat" style="color:#147e03;">Personalized AI</a> – Get food tips tailored to your goals</li>
                         </ul>
                         </td>
                     </tr>
@@ -131,34 +131,34 @@ const welcomeHtml = (name = "there") => `
 `;
 
 class WelcomeEmailService {
-    constructor() {
-        this.transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_TEST_PASSWORD,
-            },
-        });
-    }
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_TEST_PASSWORD,
+      },
+    });
+  }
 
-    async sendWelcomeDetails(toEmail, name) {
-        const mailOptions = {
-            from: `Foodimetric <${process.env.EMAIL_ADDRESS}>`,
-            to: toEmail,
-            subject: "Welcome to Foodimetric – Let’s Get Started!",
-            html: welcomeHtml(name),
-        };
+  async sendWelcomeDetails(toEmail, name) {
+    const mailOptions = {
+      from: `Foodimetric <${process.env.EMAIL_ADDRESS}>`,
+      to: toEmail,
+      subject: "Welcome to Foodimetric – Let’s Get Started!",
+      html: welcomeHtml(name),
+    };
 
-        try {
-            const info = await this.transporter.sendMail(mailOptions);
-            console.log("Welcome Email sent:", info.response);
-        } catch (err) {
-            console.error("Error sending Welcome email:", err);
-            throw err;
-        }
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log("Welcome Email sent:", info.response);
+    } catch (err) {
+      console.error("Error sending Welcome email:", err);
+      throw err;
     }
+  }
 }
 
 module.exports = { WelcomeEmailService };
