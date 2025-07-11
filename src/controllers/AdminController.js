@@ -6,6 +6,7 @@ const { certainRespondMessage } = require("../utils/response");
 const User = require("../models/user.models");
 const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
+const Message = require("../models/message.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
 const Newsletter = require("../models/newsletter-subscription.model.js");
 const { creditUsers } = require('../../credit_verified_users.js');
@@ -229,6 +230,23 @@ class AdminController {
         } catch (error) {
             console.error("Error fetching analytics:", error);
             return res.status(500).json({ success: false, message: "Error fetching analytics" });
+        }
+    }
+
+    async getAllMessages(req, res) {
+        try {
+            const messages = await Message.find().select("text createdAt user_id").sort({ createdAt: -1 });
+            return res.status(200).json({
+                success: true,
+                count: messages.length,
+                messages,
+            });
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Failed to retrieve messages",
+            });
         }
     }
 
