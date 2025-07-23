@@ -92,10 +92,51 @@ class UserRepository {
     }
   }
 
+  // async editProfile(update, user) {
+  //   let result = await this.Model.findByIdAndUpdate(user._id, update, {
+  //     new: true,
+  //   });
+  //   return {
+  //     payload: result,
+  //   };
+  // }
+
   async editProfile(update, user) {
-    let result = await this.Model.findByIdAndUpdate(user._id, update, {
-      new: true,
-    });
+    // Define fields allowed in the update
+    const generalFields = [
+      'location',
+      'category', 'profilePicture',
+    ];
+
+    const healthFields = [
+      'age', 'sex', 'weight', 'height', 'bmi',
+      'whr', 'bmr', 'eatingHabit', 'preferences',
+      'conditions', 'goals'
+    ];
+
+    const updateDoc = {};
+
+    // Handle general fields (e.g. firstName, location, etc.)
+    for (let key of generalFields) {
+      if (key in update) {
+        updateDoc[key] = update[key];
+      }
+    }
+
+    // Handle healthProfile fields (e.g. age, bmi, etc.)
+    for (let key of healthFields) {
+      if (key in update) {
+        updateDoc[`healthProfile.${key}`] = update[key];
+      }
+    }
+
+    // Perform the update
+    const result = await this.Model.findByIdAndUpdate(
+      user._id,
+      { $set: updateDoc },
+      { new: true }
+    );
+
     return {
       payload: result,
     };

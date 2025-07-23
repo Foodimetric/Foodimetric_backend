@@ -24,6 +24,19 @@ const userModel = new Schema({
     location: { type: String, required: false },  // New location field
     profilePicture: { type: String, required: false, default: null },
     subscriptionStatus: { type: String, required: false, default: null },
+    healthProfile: {
+        age: { type: Number },
+        sex: { type: String, enum: ['male', 'female', 'other'] },
+        weight: { type: Number }, // in kg
+        height: { type: Number }, // in cm
+        bmi: { type: Number },
+        whr: { type: Number },
+        bmr: { type: Number },
+        eatingHabit: { type: String }, // e.g., 'omnivore', 'vegetarian', etc.
+        preferences: [{ type: String }], // dietary preferences
+        conditions: [{ type: String }],  // e.g., 'diabetes', 'hypertension'
+        goals: [{ type: String }]
+    }
 },
     {
         timestamps: true
