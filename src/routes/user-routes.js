@@ -46,7 +46,7 @@ const upload = multer({
     limits: {
         fileSize: 5 * 1024 * 1024, // Max file size: 5MB
         fieldSize: 1024 * 1024, // Limit text field size to 10KB
-        fields: 10, // Limit number of fields in the request
+        fields: 20, // Limit number of fields in the request
     },
 });
 route.post("/sign-in", userController.signIn)
