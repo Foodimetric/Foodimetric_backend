@@ -22,6 +22,10 @@ const AdminSchema = new mongoose.Schema({
     enum: ["admin", "super-admin"],
     default: "admin",
   },
+
+  loginOtp: { type: String },
+
+  otpExpiresAt: { type: Date }
 }, { timestamps: true });
 
 // Hash password before saving

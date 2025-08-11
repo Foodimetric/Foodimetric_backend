@@ -8,9 +8,12 @@ const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
 const Message = require("../models/message.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
+const { OtpEmailService } = require("../services/OtpEmailService.js");
 const Newsletter = require("../models/newsletter-subscription.model.js");
 const { creditUsers } = require('../../credit_verified_users.js');
 
+
+const otpService = new OtpEmailService();
 
 function getAnalyticsBreakdown(dailyCalculations) {
     const weeklyMap = new Map();
@@ -59,6 +62,40 @@ class AdminController {
                 return certainRespondMessage(res, false, "Invalid credentials", 401);
             }
 
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+            admin.loginOtp = otp;
+            admin.otpExpiresAt = Date.now() + 5 * 60 * 1000;
+            await admin.save();
+
+            await otpService.OtpDetails(admin.email, otp);
+
+            return res.json({ success: true, message: "OTP sent to email" });
+        } catch (error) {
+            console.error(err);
+            return certainRespondMessage(res, false, "Server error", 500);
+        }
+    }
+
+    async otpVerify(req, res) {
+        const { email, otp } = req.body;
+
+        try {
+            const admin = await Admin.findOne({ email });
+            if (!admin) {
+                return res.status(404).json({ success: false, message: "Admin not found" });
+            }
+
+            if (!admin.loginOtp || admin.loginOtp !== otp || Date.now() > admin.otpExpiresAt) {
+                return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+            }
+
+            // Clear OTP after verification
+            admin.loginOtp = null;
+            admin.otpExpiresAt = null;
+            await admin.save();
+
+            // Create token
             const token = jwt.sign({ id: admin._id, role: admin.role }, process.env.JWT_SECRET, {
                 expiresIn: "1d",
             });
@@ -69,11 +106,40 @@ class AdminController {
                 role: admin.role,
                 name: admin.name,
             });
-        } catch (error) {
-            return certainRespondMessage(res, false, "Server error", 500);
+
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: "Server error" });
         }
     }
 
+    async resendOtp(req, res) {
+        const { email } = req.body;
+
+        try {
+            const admin = await Admin.findOne({ email });
+            if (!admin) {
+                return res.status(404).json({ success: false, message: "Invalid credentilas" });
+            }
+
+            // Generate new OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+            // Save new OTP & expiry
+            admin.loginOtp = otp;
+            admin.otpExpiresAt = Date.now() + 5 * 60 * 1000;
+            await admin.save();
+
+            // Send new OTP via email
+            await otpService.OtpDetails(email, otp);
+
+            return res.json({ success: true, message: "New OTP sent to your email" });
+
+        } catch (err) {
+            console.error("Error resending OTP:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
     async getAnalytics(req, res) {
         try {
             const now = new Date();
