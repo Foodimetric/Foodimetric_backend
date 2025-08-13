@@ -51,7 +51,7 @@ const upload = multer({
 });
 route.post("/sign-in", userController.signIn)
 route.post("/sign-up", userController.signUp)
-router.post("/save-fcm-token", userController.saveFcmToken);
+route.post("/save-fcm-token", userController.saveFcmToken);
 route.get("/logged-user", requireLogin, userController.getLoggedUser)
 route.get("/platform/analytics", requireLogin, userController.getUserAnalytics)
 route.post("/analytics", requireLogin, userController.saveAnalytics)
