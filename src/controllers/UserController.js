@@ -53,7 +53,7 @@ class UserController {
             const { userId, token } = req.body;
 
             if (!userId || !token) {
-                return certainRespondMessage(res, null, "Missing userId or token", 400);
+                return certainRespondMessage(res, null, "Missing userId or fcm token", 400);
             }
 
             // Add the token to the array if it doesn't already exist
