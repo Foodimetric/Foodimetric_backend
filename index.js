@@ -52,9 +52,10 @@ app.use(passport.initialize())
 app.use(passport.session());
 app.use(
   cors({
-    origin: "*"
+    origin: ["http://localhost:3000", "https://foodimetric.com"], // add all your frontends
+    credentials: true
   })
-)
+);
 
 const options = {
   definition: {
