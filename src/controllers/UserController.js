@@ -48,6 +48,33 @@ class UserController {
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
 
+    async saveFcmToken(req, res) {
+        try {
+            const { userId, token } = req.body;
+
+            if (!userId || !token) {
+                return certainRespondMessage(res, null, "Missing userId or token", 400);
+            }
+
+            // Add the token to the array if it doesn't already exist
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { $addToSet: { fcmTokens: token } }, // $addToSet prevents duplicates
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return certainRespondMessage(res, null, "User not found", 404);
+            }
+
+            return certainRespondMessage(res, updatedUser, "Token saved successfully", 200);
+
+        } catch (err) {
+            console.error("Error saving FCM token:", err);
+            return certainRespondMessage(res, null, "Internal server error", 500);
+        }
+    }
+
     async getUserById(req, res) {
         const { id } = req.params;
         getUser(id, res)

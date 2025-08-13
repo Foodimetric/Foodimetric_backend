@@ -24,6 +24,7 @@ const userModel = new Schema({
     location: { type: String, required: false },  // New location field
     profilePicture: { type: String, required: false, default: null },
     subscriptionStatus: { type: String, required: false, default: null },
+    fcmTokens: [{ type: String }], // NEW: store multiple device tokens
     healthProfile: {
         age: { type: Number },
         sex: { type: String, enum: ['male', 'female', 'other'] },
