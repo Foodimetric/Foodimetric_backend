@@ -254,6 +254,20 @@ class AdminController {
                 .sort({ createdAt: -1 })
                 .select("email createdAt")
                 .lean()
+            const roleDistribution = await User.aggregate([
+                {
+                    $group: {
+                        _id: "$category",
+                        count: { $sum: 1 }
+                    }
+                }
+            ]);
+
+            // Format into a cleaner structure for categories 0–3
+            const categories = { 0: 0, 1: 0, 2: 0, 3: 0 };
+            roleDistribution.forEach(item => {
+                categories[item._id] = item.count;
+            });
             return res.json({
                 totalUsers,
                 totalAnthropometricCalculations,
@@ -290,7 +304,8 @@ class AdminController {
                     count: calc.count,
                     trend: null
                 })),
-                newsletterSubscribers
+                newsletterSubscribers,
+                roleDistribution: categories
             });
 
         } catch (error) {
