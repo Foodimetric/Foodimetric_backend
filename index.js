@@ -52,7 +52,7 @@ app.use(passport.initialize())
 app.use(passport.session());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://foodimetric.com"], // add all your frontends
+    origin: ["http://localhost:3000", "https://foodimetric.com", "http://localhost:5173", "https://foodimetric-admin.netlify.app"], // add all your frontends
     credentials: true
   })
 );
