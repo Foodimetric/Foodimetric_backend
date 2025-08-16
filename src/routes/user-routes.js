@@ -70,6 +70,10 @@ route.get(
 // Callback route for Google to redirect to
 route.get(
     "/google/callback",
+    (req, res, next) => {
+        console.log("🔍 Google callback query params:", req.query);
+        next();
+    },
     passport.authenticate("google", { session: false }),
     (req, res) => {
         if (!req.user) {
