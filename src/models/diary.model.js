@@ -13,6 +13,7 @@ const diarySchema = new Schema({
     foodEaten: { type: String, required: true }, // Food name
     quantity: { type: String, required: true }, // Quantity in grams, ml, or units
     additionalInfo: { type: String }, // Optional field for any additional notes
+    imageUrl: { type: String },
     timestamp: {
         type: Date,
         default: Date.now
