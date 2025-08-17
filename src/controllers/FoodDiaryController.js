@@ -19,6 +19,7 @@ class FoodDiaryController {
 
             // if image was uploaded
             if (req.file) {
+                console.log("Multer file data:", req.file); // Debug log
                 imageUrl = await uploadFile(
                     req.file.path,
                     req.file.originalname,
