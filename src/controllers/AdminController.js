@@ -183,6 +183,8 @@ class AdminController {
                 dailyCalculations,
                 rawDailyFoodDiaryLogs,
                 anthropometricStats,
+                UsageStats,
+                SignupStats,
                 totalAnthropometricCalculations,
                 totalUsers,
                 allUsers,
@@ -243,6 +245,8 @@ class AdminController {
                 getDailyCounts(AnthropometricCalculation, "timestamp"),
                 getDailyCounts(FoodDiary, "createdAt"),
                 getTimeFrameCounts(AnthropometricCalculation, "timestamp"),
+                getTimeFrameCounts(User, "createdAt"),
+                getTimeFrameCounts(User, "timestamp"),
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
                 User.find().select("firstName lastName email usage lastUsageDate location isVerified category googleId credits"),
@@ -305,6 +309,8 @@ class AdminController {
                 yearlyCalculations,
 
                 anthropometricStats,
+                UsageStats,
+                SignupStats,
                 foodDiaryStats: {
                     daily: rawDailyFoodDiaryLogs.reverse(),
                     weekly: weeklyFoodLogs,
