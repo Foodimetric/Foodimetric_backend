@@ -3,45 +3,45 @@ const { uploadFile } = require('../config/googleDrive');
 const fs = require("fs");
 
 class FoodDiaryController {
-    // async createFood(req, res) {
-    //     try {
-    //         const foodData = req.body; // Assume the body contains the required fields
-    //         const food = await FoodDiaryRepository.createFood(foodData);
-    //         res.status(201).json(food);
-    //     } catch (error) {
-    //         res.status(400).json({ message: error.message });
-    //     }
-    // }
-
     async createFood(req, res) {
         try {
-            let imageUrl = null;
-
-            // if image was uploaded
-            if (req.file) {
-                console.log("Multer file data:", req.file); // Debug log
-                imageUrl = await uploadFile(
-                    req.file.path,
-                    req.file.originalname,
-                    req.file.mimetype
-                );
-
-                // cleanup local temp file
-                fs.unlinkSync(req.file.path);
-            }
-
-            const foodData = {
-                ...req.body,
-                imageUrl: imgUrl
-            };
-
+            const foodData = req.body; // Assume the body contains the required fields
             const food = await FoodDiaryRepository.createFood(foodData);
             res.status(201).json(food);
         } catch (error) {
-            console.error(error);
             res.status(400).json({ message: error.message });
         }
     }
+
+    // async createFood(req, res) {
+    //     try {
+    //         let imageUrl = null;
+
+    //         // if image was uploaded
+    //         if (req.file) {
+    //             console.log("Multer file data:", req.file); // Debug log
+    //             imageUrl = await uploadFile(
+    //                 req.file.path,
+    //                 req.file.originalname,
+    //                 req.file.mimetype
+    //             );
+
+    //             // cleanup local temp file
+    //             fs.unlinkSync(req.file.path);
+    //         }
+
+    //         const foodData = {
+    //             ...req.body,
+    //             imageUrl: imgUrl
+    //         };
+
+    //         const food = await FoodDiaryRepository.createFood(foodData);
+    //         res.status(201).json(food);
+    //     } catch (error) {
+    //         console.error(error);
+    //         res.status(400).json({ message: error.message });
+    //     }
+    // }
     async getAllFoodsByUser(req, res) {
         try {
             const userId = req.params.userId; // Assuming userId is passed in the URL
