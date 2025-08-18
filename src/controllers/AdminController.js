@@ -302,9 +302,9 @@ class AdminController {
                 categories[item._id] = item.count;
             });
 
-            console.log("Weekly:", weeklySignupStat);
-            console.log("Monthly:", monthlySignupStat);
-            console.log("Yearly:", yearlySignupStat);
+            // console.log("Weekly:", weeklySignupStat);
+            // console.log("Monthly:", monthlySignupStat);
+            // console.log("Yearly:", yearlySignupStat);
             return res.json({
                 totalUsers,
                 totalAnthropometricCalculations,

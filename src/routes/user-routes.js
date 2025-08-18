@@ -94,7 +94,11 @@ route.get(
             location: req.user.location,
             createdAt: req.user.createdAt,
             profilePicture: req.user.profilePicture || '',
-            credits: req.user.credits
+            credits: req.user.credits,
+            streak: req.user.streak,
+            longestStreak: req.user.longestStreak,
+            healthProfile: req.user.healthProfile,
+            isVerified: req.user.isVerified,
         };
 
         // ✅ Redirect with query params
