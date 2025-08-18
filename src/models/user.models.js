@@ -25,6 +25,9 @@ const userModel = new Schema({
     profilePicture: { type: String, required: false, default: null },
     subscriptionStatus: { type: String, required: false, default: null },
     fcmTokens: [{ type: String }], // NEW: store multiple device tokens
+    streak: { type: Number, default: 0 },
+    longestStreak: { type: Number, default: 0 },
+    lastLogDate: { type: Date, default: null },
     healthProfile: {
         age: { type: Number },
         sex: { type: String, enum: ['male', 'female', 'other'] },

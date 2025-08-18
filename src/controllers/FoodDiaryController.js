@@ -3,11 +3,65 @@ const { uploadFile } = require('../config/googleDrive');
 const fs = require("fs");
 
 class FoodDiaryController {
+    // async createFood(req, res) {
+    //     try {
+    //         const foodData = req.body; // Assume the body contains the required fields
+    //         const food = await FoodDiaryRepository.createFood(foodData);
+    //         res.status(201).json(food);
+    //     } catch (error) {
+    //         res.status(400).json({ message: error.message });
+    //     }
+    // }
+
+
     async createFood(req, res) {
         try {
-            const foodData = req.body; // Assume the body contains the required fields
+            const { user_id } = req.body;
+            const foodData = req.body;
+
+            // find user
+            const user = await User.findById(user_id);
+            if (!user) return res.status(404).json({ message: "User not found" });
+
+            const today = new Date();
+            const todayDateOnly = today.toISOString().split("T")[0];
+            const lastLogDate = user.lastLogDate ? user.lastLogDate.toISOString().split("T")[0] : null;
+
+            if (!lastLogDate) {
+                // First log ever
+                user.streak = 1;
+            } else {
+                const diffDays = Math.floor(
+                    (new Date(todayDateOnly) - new Date(lastLogDate)) / (1000 * 60 * 60 * 24)
+                );
+
+                if (diffDays === 0) {
+                    // Already logged today → do nothing
+                } else if (diffDays === 1) {
+                    user.streak += 1; // consecutive day
+                } else {
+                    user.streak = 1; // missed a day → reset streak
+                }
+            }
+
+            user.lastLogDate = todayDateOnly;
+
+            if (user.streak > user.longestStreak) {
+                user.longestStreak = user.streak;
+            }
+
+            await user.save();
+
+            // save food lo
             const food = await FoodDiaryRepository.createFood(foodData);
-            res.status(201).json(food);
+
+            res.status(201).json({
+                message: "Food logged successfully",
+                streak: user.streak,
+                longestStreak: user.longestStreak,
+                food,
+            });
+
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
