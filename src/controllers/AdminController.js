@@ -143,20 +143,6 @@ class AdminController {
     async getAnalytics(req, res) {
         try {
             const now = new Date();
-
-            // const getDailyCounts = (Model, dateField, limit = 30) => {
-            //     return Model.aggregate([
-            //         {
-            //             $group: {
-            //                 _id: { $dateToString: { format: "%Y-%m-%d", date: `$${dateField}` } },
-            //                 count: { $sum: 1 }
-            //             }
-            //         },
-            //         { $sort: { _id: -1 } },
-            //         { $limit: limit }
-            //     ]);
-            // };
-
             const getDailyCounts = (Model, dateField, limit = null) => {
                 const pipeline = [
                     {
@@ -282,6 +268,10 @@ class AdminController {
             roleDistribution.forEach(item => {
                 categories[item._id] = item.count;
             });
+
+            console.log("Weekly:", weeklySignupStat);
+            console.log("Monthly:", monthlySignupStat);
+            console.log("Yearly:", yearlySignupStat);
             return res.json({
                 totalUsers,
                 totalAnthropometricCalculations,
@@ -330,24 +320,6 @@ class AdminController {
             return res.status(500).json({ success: false, message: "Error fetching analytics" });
         }
     }
-
-    // async getAllMessages(req, res) {
-    //     try {
-    //         const messages = await Message.find().select("text createdAt user_id").sort({ createdAt: -1 });
-    //         return res.status(200).json({
-    //             success: true,
-    //             count: messages.length,
-    //             messages,
-    //         });
-    //     } catch (error) {
-    //         console.error("Error fetching messages:", error);
-    //         return res.status(500).json({
-    //             success: false,
-    //             message: "Failed to retrieve messages",
-    //         });
-    //     }
-    // }
-
 
     async getAllMessages(req, res) {
         try {
