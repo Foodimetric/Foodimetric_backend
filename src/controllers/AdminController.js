@@ -144,19 +144,32 @@ class AdminController {
         try {
             const now = new Date();
 
-            const getDailyCounts = (Model, dateField, limit = 30) => {
-                return Model.aggregate([
+            // const getDailyCounts = (Model, dateField, limit = 30) => {
+            //     return Model.aggregate([
+            //         {
+            //             $group: {
+            //                 _id: { $dateToString: { format: "%Y-%m-%d", date: `$${dateField}` } },
+            //                 count: { $sum: 1 }
+            //             }
+            //         },
+            //         { $sort: { _id: -1 } },
+            //         { $limit: limit }
+            //     ]);
+            // };
+
+            const getDailyCounts = (Model, dateField, limit = null) => {
+                const pipeline = [
                     {
                         $group: {
                             _id: { $dateToString: { format: "%Y-%m-%d", date: `$${dateField}` } },
                             count: { $sum: 1 }
                         }
                     },
-                    { $sort: { _id: -1 } },
-                    { $limit: limit }
-                ]);
+                    { $sort: { _id: -1 } }
+                ];
+                if (limit) pipeline.push({ $limit: limit });
+                return Model.aggregate(pipeline);
             };
-
             const getTimeFrameCounts = async (Model, dateField) => ({
                 weekly: await Model.countDocuments({ [dateField]: { $gte: new Date(now - 7 * 86400000) } }),
                 monthly: await Model.countDocuments({ [dateField]: { $gte: new Date(new Date().setMonth(now.getMonth() - 1)) } }),
