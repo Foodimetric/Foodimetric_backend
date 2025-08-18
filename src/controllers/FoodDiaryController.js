@@ -1,4 +1,5 @@
 const FoodDiaryRepository = require('../repositories/DiaryRepository');
+const User = require("../models/user.models");
 const { uploadFile } = require('../config/googleDrive');
 const fs = require("fs");
 
