@@ -333,13 +333,44 @@ class AdminController {
         }
     }
 
+    // async getAllMessages(req, res) {
+    //     try {
+    //         const messages = await Message.find().select("text createdAt user_id").sort({ createdAt: -1 });
+    //         return res.status(200).json({
+    //             success: true,
+    //             count: messages.length,
+    //             messages,
+    //         });
+    //     } catch (error) {
+    //         console.error("Error fetching messages:", error);
+    //         return res.status(500).json({
+    //             success: false,
+    //             message: "Failed to retrieve messages",
+    //         });
+    //     }
+    // }
+
+
     async getAllMessages(req, res) {
         try {
-            const messages = await Message.find().select("text createdAt user_id").sort({ createdAt: -1 });
+            const messages = await Message.find()
+                .select("text createdAt user_id")
+                .populate("user_id", "firstName lastName email") // fetch user details
+                .sort({ createdAt: -1 });
+
             return res.status(200).json({
                 success: true,
                 count: messages.length,
-                messages,
+                messages: messages.map(msg => ({
+                    id: msg._id,
+                    text: msg.text,
+                    createdAt: msg.createdAt,
+                    user: {
+                        id: msg.user_id._id,
+                        name: `${msg.user_id.firstName || ""} ${msg.user_id.lastName || ""}`.trim(),
+                        email: msg.user_id.email
+                    }
+                }))
             });
         } catch (error) {
             console.error("Error fetching messages:", error);
