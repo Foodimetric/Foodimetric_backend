@@ -52,6 +52,39 @@ function getAnalyticsBreakdown(dailyCalculations) {
     };
 }
 
+function getSignupBreakdown(dailySignups) {
+
+    // Weekly, monthly, yearly maps
+    const weeklyMap = new Map();
+    const monthlyMap = new Map();
+    const yearlyMap = new Map();
+
+    dailySignups.forEach(entry => {
+        const date = moment(entry._id);
+        const year = date.year();
+        const monthKey = date.format("MMMM YYYY");
+        const weekKey = `Week ${date.isoWeek()} of ${year}`;
+
+        // Yearly
+        if (!yearlyMap.has(year)) yearlyMap.set(year, 0);
+        yearlyMap.set(year, yearlyMap.get(year) + entry.count);
+
+        // Monthly
+        if (!monthlyMap.has(monthKey)) monthlyMap.set(monthKey, 0);
+        monthlyMap.set(monthKey, monthlyMap.get(monthKey) + entry.count);
+
+        // Weekly
+        if (!weeklyMap.has(weekKey)) weeklyMap.set(weekKey, 0);
+        weeklyMap.set(weekKey, weeklyMap.get(weekKey) + entry.count);
+    });
+
+    return {
+        weeklySignupStat: Array.from(weeklyMap.entries()).map(([week, count]) => ({ week, count })),
+        monthlySignupStat: Array.from(monthlyMap.entries()).map(([month, count]) => ({ month, count })),
+        yearlySignupStat: Array.from(yearlyMap.entries()).map(([year, count]) => ({ year, count }))
+    };
+}
+
 class AdminController {
     async login(req, res) {
         const { email, password } = req.body;
@@ -248,7 +281,7 @@ class AdminController {
             ]);
 
             const { weeklyCalculations, monthlyCalculations, yearlyCalculations } = getAnalyticsBreakdown(dailyCalculations);
-            const { weeklySignupStat, monthlySignupStat, yearlySignupStat } = getAnalyticsBreakdown(dailyUsage);
+            const { weeklySignupStat, monthlySignupStat, yearlySignupStat } = getSignupBreakdown(dailySignups);
             const { weeklyCalculations: weeklyFoodLogs, monthlyCalculations: monthlyFoodLogs, yearlyCalculations: yearlyFoodLogs } = getAnalyticsBreakdown(rawDailyFoodDiaryLogs);
             const newsletterSubscribers = await Newsletter.find()
                 .sort({ createdAt: -1 })
