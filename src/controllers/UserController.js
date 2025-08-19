@@ -1,6 +1,7 @@
 const User = require("../models/user.models")
 const Anthro = require("../models/anthropometric")
 const Diary = require("../models/diary.model")
+const Usage = require("../models/usage.model")
 const Contact = require("../models/contact.model");
 const UserRepository = require("../repositories/UserRepository");
 const { certainRespondMessage } = require("../utils/response");
@@ -260,36 +261,86 @@ class UserController {
         }
     }
 
+    // async saveAnalytics(req, res) {
+    //     try {
+    //         const userId = req.user._id;
+
+    //         // Fetch the user's analytics data
+    //         const user = await User.findById(userId);
+
+    //         if (!user) {
+    //             return res.status(404).json({ message: "User not found" });
+    //         }
+
+    //         const today = new Date();
+    //         const lastUsageDate = user.lastUsageDate;
+
+    //         if (lastUsageDate && new Date(lastUsageDate).toDateString() === today.toDateString()) {
+    //             return res.status(200).json({ message: "Platform usage already recorded for today." });
+    //         }
+
+    //         await Usage.create({
+    //             userId: user._id,
+    //         });
+    //         // Increment usage and update lastUsageDate
+    //         user.usage += 1;
+    //         user.lastUsageDate = today;
+
+    //         await user.save();
+
+    //         res.status(200).json({ message: "Platform usage updated successfully." });
+    //     } catch (error) {
+    //         res.status(500).json({ message: "Error updating platform usage.", error: error.message });
+    //     }
+    // }
+
     async saveAnalytics(req, res) {
         try {
             const userId = req.user._id;
 
-            // Fetch the user's analytics data
+            // Ensure user exists
             const user = await User.findById(userId);
-
             if (!user) {
                 return res.status(404).json({ message: "User not found" });
             }
 
-            const today = new Date();
-            const lastUsageDate = user.lastUsageDate;
+            // Calculate today's date boundaries
+            const startOfToday = new Date();
+            startOfToday.setHours(0, 0, 0, 0);
 
-            if (lastUsageDate && new Date(lastUsageDate).toDateString() === today.toDateString()) {
-                return res.status(200).json({ message: "Platform usage already recorded for today." });
+            const startOfTomorrow = new Date(startOfToday);
+            startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+
+            // Check if a usage record already exists for today
+            const existingUsage = await Usage.findOne({
+                userId,
+                timestamp: { $gte: startOfToday, $lt: startOfTomorrow }
+            });
+
+            if (existingUsage) {
+                return res
+                    .status(200)
+                    .json({ message: "Platform usage already recorded for today." });
             }
+
+            // Create new usage record
+            await Usage.create({ userId });
 
             // Increment usage and update lastUsageDate
             user.usage += 1;
-            user.lastUsageDate = today;
-
+            user.lastUsageDate = new Date();
             await user.save();
 
-            res.status(200).json({ message: "Platform usage updated successfully." });
+            return res
+                .status(200)
+                .json({ message: "Platform usage recorded successfully." });
         } catch (error) {
-            res.status(500).json({ message: "Error updating platform usage.", error: error.message });
+            return res.status(500).json({
+                message: "Error updating platform usage.",
+                error: error.message,
+            });
         }
     }
-
     async contact(req, res) {
         try {
             const { name, email, address, service, note } = req.body;
