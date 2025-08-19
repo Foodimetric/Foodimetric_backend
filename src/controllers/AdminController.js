@@ -458,6 +458,7 @@ const User = require("../models/user.models");
 const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
 const Message = require("../models/message.js");
+const SystemSetting = require("../models/systemSetting.model.js");
 const Usage = require("../models/usage.model.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
 const { OtpEmailService } = require("../services/OtpEmailService.js");
@@ -653,7 +654,6 @@ class AdminController {
                 // Totals and lists
                 totalAnthropometricCalculations,
                 totalUsers,
-                allUsers,
                 topUsers,
                 // Top locations
                 topLocations,
@@ -718,7 +718,7 @@ class AdminController {
                 ),
 
                 // Daily food diary logs
-                FoodDiary.aggregate(buildDailyCountsAggregation("createdAt")),
+                FoodDiary.aggregate(buildDailyCountsAggregation("timestamp")),
 
                 // Time window counts for anthropometrics
                 getTimeFrameCounts(AnthropometricCalculation, "timestamp"),
@@ -726,9 +726,6 @@ class AdminController {
                 // Totals and lists
                 AnthropometricCalculation.countDocuments(),
                 User.countDocuments(),
-                User.find().select(
-                    "firstName lastName email usage lastUsageDate location isVerified category googleId credits"
-                ),
                 User.find()
                     .sort({ usage: -1 })
                     .limit(10)
@@ -777,6 +774,54 @@ class AdminController {
             });
 
             const usageBreakdown = computeBreakdown(dailyUsage);
+
+            const allUsers = await User.aggregate([
+                {
+                    $project: {
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1,
+                        usage: 1,
+                        lastUsageDate: 1,
+                        location: 1,
+                        isVerified: 1,
+                        category: 1,
+                        googleId: 1,
+                        credits: 1,
+                        healthProfile: 1,
+                        streak: 1,
+                        longestStreak: 1
+                    }
+                },
+                // Lookup latest calculation
+                {
+                    $lookup: {
+                        from: "anthropometriccalculations",
+                        let: { userId: "$_id" },
+                        pipeline: [
+                            { $match: { $expr: { $eq: ["$user_id", "$$userId"] } } },
+                            { $sort: { timestamp: -1 } },  // latest first
+                            { $limit: 1 }
+                        ],
+                        as: "latestCalculation"
+                    }
+                },
+                { $unwind: { path: "$latestCalculation", preserveNullAndEmptyArrays: true } },
+                // Lookup latest food log
+                {
+                    $lookup: {
+                        from: "fooddiaries",
+                        let: { userId: "$_id" },
+                        pipeline: [
+                            { $match: { $expr: { $eq: ["$user_id", "$$userId"] } } },
+                            { $sort: { timestamp: -1 } },  // latest first
+                            { $limit: 1 }
+                        ],
+                        as: "latestFoodLog"
+                    }
+                },
+                { $unwind: { path: "$latestFoodLog", preserveNullAndEmptyArrays: true } }
+            ]);
 
             return res.json({
                 totalUsers,
@@ -930,6 +975,112 @@ class AdminController {
             return handleError(res, error, "Server error while updating credit", 500);
         }
     }
+
+    async suspendUser(req, res) {
+        try {
+            const user = await User.findByIdAndUpdate(
+                req.params.id,
+                { status: "suspended" },
+                { new: true }
+            );
+            if (!user) return res.status(404).json({ message: "User not found" });
+            res.json({ message: "User suspended successfully", user });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    };
+
+    async activateUser(req, res) {
+        try {
+            const user = await User.findByIdAndUpdate(
+                req.params.id,
+                { status: "active" },
+                { new: true }
+            );
+            if (!user) return res.status(404).json({ message: "User not found" });
+            res.json({ message: "User activated successfully", user });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    };
+
+    async deleteUser(req, res) {
+        try {
+            const user = await User.findByIdAndDelete(req.params.id);
+            if (!user) return res.status(404).json({ message: "User not found" });
+            res.json({ message: "User deleted successfully" });
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+        }
+    };
+    // Create Admin (Only Super Admin allowed)
+    async createAdmin(req, res) {
+        try {
+            // Check if requester is super-admin
+            if (req.admin.role !== "super-admin") {
+                return res.status(403).json({ message: "Access denied. Only super-admins can create admins." });
+            }
+
+            const { name, email, password, role } = req.body;
+
+            // Prevent creating another super-admin accidentally
+            if (role === "super-admin") {
+                return res.status(400).json({ message: "You cannot create another super-admin." });
+            }
+
+            // Check if email already exists
+            const existingAdmin = await Admin.findOne({ email });
+            if (existingAdmin) {
+                return res.status(400).json({ message: "Admin with this email already exists." });
+            }
+
+            // Create new admin
+            const newAdmin = new Admin({
+                name,
+                email,
+                password,
+                role: role || "admin",
+            });
+
+            await newAdmin.save();
+
+            res.status(201).json({
+                message: "Admin created successfully.",
+                admin: {
+                    id: newAdmin._id,
+                    name: newAdmin.name,
+                    email: newAdmin.email,
+                    role: newAdmin.role,
+                },
+            });
+        } catch (error) {
+            res.status(500).json({ message: "Error creating admin.", error: error.message });
+        }
+    };
+
+    async toggleMaintenance(req, res) {
+        try {
+            const { enabled } = req.body; // true or false
+            let setting = await SystemSetting.findOne({ key: "maintenanceMode" });
+
+            if (!setting) {
+                setting = new SystemSetting({ key: "maintenanceMode", value: enabled });
+            } else {
+                setting.value = enabled;
+            }
+
+            await setting.save();
+
+            return res.json({
+                success: true,
+                message: `Maintenance mode ${enabled ? "enabled" : "disabled"} successfully.`,
+                value: setting.value
+            });
+        } catch (error) {
+            return res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
 }
 
 module.exports = { AdminController };

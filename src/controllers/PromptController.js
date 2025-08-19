@@ -1,0 +1,53 @@
+// controllers/promptController.js
+const Prompt = require("../models/Prompt");
+
+class PromptController {
+    // Create or Update prompts for a category
+    async upsertPrompts(req, res) {
+        try {
+            const { category, prompts } = req.body;
+
+            if (![0, 1, 2, 3].includes(category)) {
+                return res.status(400).json({ success: false, message: "Invalid category" });
+            }
+
+            const updated = await Prompt.findOneAndUpdate(
+                { category },
+                { prompts },
+                { new: true, upsert: true } // upsert creates if not exists
+            );
+
+            res.status(200).json({ success: true, data: updated });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err.message });
+        }
+    }
+
+    // Get prompts for a category
+    async getPrompts(req, res) {
+        try {
+            const { category } = req.params;
+            const prompts = await Prompt.findOne({ category: Number(category) });
+
+            if (!prompts) {
+                return res.status(404).json({ success: false, message: "No prompts found for this category" });
+            }
+
+            res.status(200).json({ success: true, data: prompts });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err.message });
+        }
+    }
+
+    // Get all prompts (for admin dashboard maybe)
+    async getAllPrompts(req, res) {
+        try {
+            const prompts = await Prompt.find();
+            res.status(200).json({ success: true, data: prompts });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err.message });
+        }
+    }
+}
+
+module.exports = new PromptController();

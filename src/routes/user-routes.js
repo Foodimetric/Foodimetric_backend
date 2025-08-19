@@ -1,6 +1,7 @@
 const { UserController } = require("../controllers/UserController");
 const { NewsletterController } = require('../controllers/NewsletterController')
 const requireLogin = require("../utils/requireLogin")
+const checkMaintenance = require("../middleware/checkMaintenance");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const fs = require('fs');
@@ -49,6 +50,8 @@ const upload = multer({
         fields: 20, // Limit number of fields in the request
     },
 });
+
+route.use(checkMaintenance); // applies to ALL user routes
 route.post("/sign-in", userController.signIn)
 route.post("/sign-up", userController.signUp)
 route.post("/save-fcm-token", userController.saveFcmToken);

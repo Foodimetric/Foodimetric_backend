@@ -28,6 +28,11 @@ const userModel = new Schema({
     streak: { type: Number, default: 0 },
     longestStreak: { type: Number, default: 0 },
     lastLogDate: { type: Date, default: null },
+    status: {
+        type: String,
+        enum: ["active", "suspended"],
+        default: "active"
+    },
     healthProfile: {
         age: { type: Number },
         sex: { type: String, enum: ['male', 'female', 'other'] },

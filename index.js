@@ -11,11 +11,13 @@ const userRoute = require("./src/routes/user-routes");
 const payRoute = require("./src/routes/payment-routes");
 const chatRoute = require("./src/routes/chatBot-routes");
 const adminRoute = require("./src/routes/admin-routes");
+const promptRoute = require("./src/routes/promptRoutes");
 const foodRoute = require("./src/routes/food-routes");
 const Message = require("./src/models/message");
 const calculationsRoutes = require("./src/routes/calculation");
 const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
+const { seedPrompts } = require('./prompt_seed');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
 const { createAdmins } = require('./create_admin');
 const { creditUsers } = require('./credit_verified_users');
@@ -97,6 +99,7 @@ const connection = mongoose.connection
 connection.once('open', async () => {
   // createAdmins();
   // await creditUsers();
+  await seedPrompts();
   console.log('Database running Successfully')
 })
 
@@ -118,6 +121,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 
 app.use("/users", userRoute)
 app.use("/admin", adminRoute)
+app.use("/prompt", promptRoute)
 app.use("/foods", foodRoute)
 app.use("/payment", payRoute)
 app.use('/calculations', calculationsRoutes);
