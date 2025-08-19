@@ -99,7 +99,7 @@ const connection = mongoose.connection
 connection.once('open', async () => {
   // createAdmins();
   // await creditUsers();
-  await seedPrompts();
+  // await seedPrompts();
   console.log('Database running Successfully')
 })
 
