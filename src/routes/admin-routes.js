@@ -15,7 +15,7 @@ router.put("/update-credit", adminController.updateUserCredit)
 router.patch("/users/:id/suspend", authenticateAdmin, adminController.suspendUser);
 router.patch("/users/:id/activate", authenticateAdmin, adminController.activateUser);
 router.delete("/users/:id", authenticateAdmin, adminController.deleteUser);
-router.post("/create-admin", authenticateAdmin, createAdmin);
+router.post("/create-admin", authenticateAdmin, adminController.createAdmin);
 router.post("/maintenance-mode", authenticateAdmin, adminController.toggleMaintenance);
 
 
