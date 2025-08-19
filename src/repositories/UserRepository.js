@@ -153,6 +153,7 @@ class UserRepository {
     user.credits = 1000;
     user = await this.editProfile(user, user);
     console.log(user);
+    console.log("no be me oo dey cause wahala", user.email);
     await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
 
     return {

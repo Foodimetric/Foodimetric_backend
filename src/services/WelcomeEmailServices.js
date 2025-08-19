@@ -144,6 +144,7 @@ class WelcomeEmailService {
   }
 
   async sendWelcomeDetails(toEmail, name) {
+    console.log("make we check", toEmail);
     const mailOptions = {
       from: `Foodimetric <${process.env.EMAIL_ADDRESS}>`,
       to: toEmail,

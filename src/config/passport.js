@@ -44,6 +44,7 @@ passport.use(
                 });
 
                 await user.save();
+                console.log("so na you dey cause wahala");
                 await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
                 return done(null, user);
             } catch (err) {
