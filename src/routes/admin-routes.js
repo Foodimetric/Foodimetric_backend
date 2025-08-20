@@ -17,8 +17,8 @@ router.patch("/users/:id/activate", authenticateAdmin, adminController.activateU
 router.delete("/users/:id", authenticateAdmin, adminController.deleteUser);
 router.post("/create-admin", authenticateAdmin, adminController.createAdmin);
 router.post("/maintenance-mode", authenticateAdmin, adminController.toggleMaintenance);
-
-
+router.post("/activity/log", authenticateAdmin, adminController.logActivity); // Endpoint to log an action
+router.get("/activity/logs", authenticateAdmin, adminController.getActivityLogs); // Endpoint to fetch logs
 
 
 module.exports = router;

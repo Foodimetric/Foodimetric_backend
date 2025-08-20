@@ -459,6 +459,7 @@ const Admin = require("../models/admin.models.js");
 const FoodDiary = require("../models/diary.model.js");
 const Message = require("../models/message.js");
 const SystemSetting = require("../models/systemSetting.model.js");
+const ActivityLog = require("../models/activityLog.model.js");
 const Usage = require("../models/usage.model.js");
 const AnthropometricCalculation = require("../models/anthropometric.js");
 const { OtpEmailService } = require("../services/OtpEmailService.js");
@@ -1081,6 +1082,32 @@ class AdminController {
         }
     }
 
+    async logActivity(req, res) {
+        const { user, role, action, meta } = req.body;
+        try {
+            await ActivityLog.create({
+                user,
+                role,
+                action,
+                meta
+            });
+            res.json({ success: true, message: "Settings updated successfully" });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+
+    async getActivityLogs(req, res) {
+        try {
+            const logs = await ActivityLog.find()
+                .populate("user", "name email")
+                .sort({ createdAt: -1 });
+
+            res.json({ success: true, logs });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
 }
 
 module.exports = { AdminController };
