@@ -357,6 +357,10 @@ class UserController {
 
             // check if sender already has a partner
             const sender = await User.findById(senderId);
+            if ((sender.email || "").toLowerCase() === email) {
+                return res.status(400).json({ message: "You can't invite yourself" });
+            }
+
             if (sender.partner) {
                 return res.status(400).json({ message: "You already have an accountability partner." });
             }
