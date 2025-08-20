@@ -470,10 +470,20 @@ class UserController {
             }
 
             invite.status = "rejected";
-            await user.save();
+            const bulkOps = [
+                // Update the accepting user
+                {
+                    updateOne: {
+                        filter: { _id: userId },
+                        update: {
+                            $pull: { partnerInvites: { _id: inviteId } } // Remove the accepted invite
+                        }
+                    }
+                },
+            ];
+            await User.bulkWrite(bulkOps);
 
             return res.status(200).json({ message: "Invite rejected." });
-
         } catch (err) {
             console.error(err);
             res.status(500).json({ message: "Error rejecting invite." });
