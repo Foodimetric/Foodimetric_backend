@@ -45,6 +45,14 @@ const userModel = new Schema({
             createdAt: { type: Date, default: Date.now }
         }
     ],
+    notifications: [
+        {
+            type: { type: String, enum: ['invite_rejected', 'partner_request', 'new_message'], required: true },
+            message: { type: String, required: true },
+            read: { type: Boolean, default: false },
+            createdAt: { type: Date, default: Date.now },
+        },
+    ],
     healthProfile: {
         age: { type: Number },
         sex: { type: String, enum: ['male', 'female', 'other'] },

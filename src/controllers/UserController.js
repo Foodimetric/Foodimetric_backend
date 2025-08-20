@@ -471,16 +471,31 @@ class UserController {
 
             invite.status = "rejected";
             const bulkOps = [
-                // Update the accepting user
+                // Operation 1: Remove the invite from the recipient's invites array
                 {
                     updateOne: {
                         filter: { _id: userId },
                         update: {
-                            $pull: { partnerInvites: { _id: inviteId } } // Remove the accepted invite
+                            $pull: { partnerInvites: { _id: inviteId } }
                         }
                     }
                 },
+                // Operation 2: Add a notification to the sender's notifications array
+                {
+                    updateOne: {
+                        filter: { _id: senderId },
+                        update: {
+                            $push: {
+                                notifications: {
+                                    type: 'invite_rejected',
+                                    message: `Ah, ${user.firstName} no gree o! Your partner invitation has been declined.`
+                                }
+                            }
+                        }
+                    }
+                }
             ];
+
             await User.bulkWrite(bulkOps);
 
             return res.status(200).json({ message: "Invite rejected." });
