@@ -2,6 +2,7 @@ const User = require("../models/user.models")
 const Anthro = require("../models/anthropometric")
 const Diary = require("../models/diary.model")
 const Usage = require("../models/usage.model")
+const PartnerInviteEmailService = require("../services/PartnerInviteEmailService")
 const Contact = require("../models/contact.model");
 const UserRepository = require("../repositories/UserRepository");
 const { certainRespondMessage } = require("../utils/response");
@@ -261,39 +262,6 @@ class UserController {
         }
     }
 
-    // async saveAnalytics(req, res) {
-    //     try {
-    //         const userId = req.user._id;
-
-    //         // Fetch the user's analytics data
-    //         const user = await User.findById(userId);
-
-    //         if (!user) {
-    //             return res.status(404).json({ message: "User not found" });
-    //         }
-
-    //         const today = new Date();
-    //         const lastUsageDate = user.lastUsageDate;
-
-    //         if (lastUsageDate && new Date(lastUsageDate).toDateString() === today.toDateString()) {
-    //             return res.status(200).json({ message: "Platform usage already recorded for today." });
-    //         }
-
-    //         await Usage.create({
-    //             userId: user._id,
-    //         });
-    //         // Increment usage and update lastUsageDate
-    //         user.usage += 1;
-    //         user.lastUsageDate = today;
-
-    //         await user.save();
-
-    //         res.status(200).json({ message: "Platform usage updated successfully." });
-    //     } catch (error) {
-    //         res.status(500).json({ message: "Error updating platform usage.", error: error.message });
-    //     }
-    // }
-
     async saveAnalytics(req, res) {
         try {
             const userId = req.user._id;
@@ -381,6 +349,114 @@ class UserController {
             return certainRespondMessage(res, null, `Failed to send message: ${error.message}`, 500);
         }
     }
+
+    async sendInvite(req, res) {
+        try {
+            const { email } = req.body;
+            const senderId = req.user._id; // assuming you’re using auth middleware
+
+            // check if sender already has a partner
+            const sender = await User.findById(senderId);
+            if (sender.partner) {
+                return res.status(400).json({ message: "You already have an accountability partner." });
+            }
+
+            let receiver = await User.findOne({ email });
+
+
+            if (!receiver) {
+                // Generate referral link
+                const referralLink = `https://foodimetric.com/register?ref=${senderId}`;
+
+                // Send email
+                const inviteService = new PartnerInviteEmailService();
+                await inviteService.sendInvite(receiverEmail, referralLink, sender.name || "A Foodimetric user");
+
+                return res.status(200).json({
+                    message: "User not found. Invite email sent with referral link.",
+                    referralLink,
+                });
+            }
+
+            // Check if receiver already has a partner
+            if (receiver.partner) {
+                return res.status(400).json({ message: "This user already has a partner." });
+            }
+
+            // Add invite to receiver
+            receiver.partnerInvites.push({ from: senderId });
+            await receiver.save();
+
+            return res.status(200).json({ message: "Invite sent successfully." });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Error sending invite." });
+        }
+    }
+
+    async acceptInvite(req, res) {
+        try {
+            const { inviteId } = req.body;
+            const userId = req.user._id;
+
+            const user = await User.findById(userId).populate("partnerInvites.from");
+
+            const invite = user.partnerInvites.id(inviteId);
+            if (!invite) {
+                return res.status(404).json({ message: "Invite not found." });
+            }
+
+            if (invite.status !== "pending") {
+                return res.status(400).json({ message: "Invite already handled." });
+            }
+
+            const sender = await User.findById(invite.from);
+
+            // Check if either already has a partner
+            if (user.partner || sender.partner) {
+                return res.status(400).json({ message: "One of you already has a partner." });
+            }
+
+            // Link both users as partners
+            user.partner = sender._id;
+            sender.partner = user._id;
+
+            invite.status = "accepted";
+
+            await user.save();
+            await sender.save();
+
+            return res.status(200).json({ message: "Invite accepted. You are now partners!" });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Error accepting invite." });
+        }
+    };
+
+    async rejectInvite(req, res) {
+        try {
+            const { inviteId } = req.body;
+            const userId = req.user._id;
+
+            const user = await User.findById(userId);
+            const invite = user.partnerInvites.id(inviteId);
+
+            if (!invite) {
+                return res.status(404).json({ message: "Invite not found." });
+            }
+
+            invite.status = "rejected";
+            await user.save();
+
+            return res.status(200).json({ message: "Invite rejected." });
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Error rejecting invite." });
+        }
+    };
 }
 
 module.exports = {

@@ -33,6 +33,18 @@ const userModel = new Schema({
         enum: ["active", "suspended"],
         default: "active"
     },
+    partner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+    },
+    partnerInvites: [
+        {
+            from: { type: Schema.Types.ObjectId, ref: "User" },
+            status: { type: String, enum: ["pending", "accepted", "rejected"], default: "pending" },
+            createdAt: { type: Date, default: Date.now }
+        }
+    ],
     healthProfile: {
         age: { type: Number },
         sex: { type: String, enum: ['male', 'female', 'other'] },

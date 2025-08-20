@@ -120,5 +120,10 @@ route.post("/forgot-password", (req, res) => userController.forgotPassword(req, 
 // Reset Password
 route.post("/reset-password", (req, res) => userController.resetPassword(req, res))
 route.post("/deduct-credit", requireLogin, userController.deductCredit);
+route.post("/invite-partner", requireLogin, userController.sendInvite);
+// Accept invite
+route.post("/accept-invite/:id", requireLogin, userController.acceptInvite);
+// Decline invite
+route.post("/decline-invite/:id", requireLogin, userController.rejectInvite);
 
 module.exports = route
