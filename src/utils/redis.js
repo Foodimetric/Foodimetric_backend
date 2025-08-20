@@ -15,6 +15,9 @@ const { createClient } = require("redis");
 
 const redisClient = createClient({
   url: process.env.REDIS_URL,
+  socket: {
+    connectTimeout: 30000, // 20 seconds
+  },
 });
 
 redisClient.on("connect", () => {
