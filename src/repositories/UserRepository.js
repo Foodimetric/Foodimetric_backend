@@ -23,7 +23,15 @@ class UserRepository {
   }
 
   async getUserById(userId) {
-    let result = await this.Model.findById(userId);
+    let result = await this.Model.findById(userId)
+      .populate({
+        path: 'partner',
+        select: 'firstName lastName email streak longestStreak' // Add streak and longestStreak here
+      })
+      .populate({
+        path: 'partnerInvites.from',
+        select: 'firstName lastName email'
+      });
     return {
       payload: result,
     };
@@ -31,7 +39,15 @@ class UserRepository {
 
   async signIn(email, password) {
     try {
-      let user = await this.Model.findOne({ email }).populate('partner partnerInvites.from', 'firstName lastName email');
+      let user = await this.Model.findOne({ email })
+        .populate({
+          path: 'partner',
+          select: 'firstName lastName email streak longestStreak' // Add streak and longestStreak here
+        })
+        .populate({
+          path: 'partnerInvites.from',
+          select: 'firstName lastName email'
+        });
       if (!user) {
         return {
           message: "There is no user with this email",

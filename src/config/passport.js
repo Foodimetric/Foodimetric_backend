@@ -17,8 +17,14 @@ passport.use(
                 console.log("🔍 Checking user in DB...");
                 // Find the user and populate the partner and partnerInvites details
                 let user = await User.findOne({ email: profile.emails[0].value })
-                    .populate('partner partnerInvites.from', 'firstName lastName email');
-
+                    .populate({
+                        path: 'partner',
+                        select: 'firstName lastName email streak longestStreak' // Add streak and longestStreak here
+                    })
+                    .populate({
+                        path: 'partnerInvites.from',
+                        select: 'firstName lastName email'
+                    });
                 if (user) {
                     console.log("✅ User exists, updating Google ID...");
                     // If the user exists but doesn't have a googleId, update it
@@ -49,7 +55,14 @@ passport.use(
                 console.log("so na you dey cause wahala");
                 await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
                 const populatedNewUser = await User.findById(newUser._id)
-                    .populate('partner partnerInvites.from', 'firstName lastName email');
+                    .populate({
+                        path: 'partner',
+                        select: 'firstName lastName email streak longestStreak' // Add streak and longestStreak here
+                    })
+                    .populate({
+                        path: 'partnerInvites.from',
+                        select: 'firstName lastName email'
+                    });
 
                 return done(null, populatedNewUser);
             } catch (err) {
