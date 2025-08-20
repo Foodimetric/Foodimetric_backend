@@ -15,7 +15,9 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             try {
                 console.log("🔍 Checking user in DB...");
-                let user = await User.findOne({ email: profile.emails[0].value });
+                // Find the user and populate the partner and partnerInvites details
+                let user = await User.findOne({ email: profile.emails[0].value })
+                    .populate('partner partnerInvites.from', 'firstName lastName email');
 
                 if (user) {
                     console.log("✅ User exists, updating Google ID...");
@@ -46,7 +48,10 @@ passport.use(
                 await user.save();
                 console.log("so na you dey cause wahala");
                 await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
-                return done(null, user);
+                const populatedNewUser = await User.findById(newUser._id)
+                    .populate('partner partnerInvites.from', 'firstName lastName email');
+
+                return done(null, populatedNewUser);
             } catch (err) {
                 console.error("❌ Error in Google OAuth Strategy:", err);
                 return done(err, null);

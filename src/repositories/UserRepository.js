@@ -31,7 +31,7 @@ class UserRepository {
 
   async signIn(email, password) {
     try {
-      let user = await this.Model.findOne({ email });
+      let user = await this.Model.findOne({ email }).populate('partner partnerInvites.from', 'firstName lastName email');
       if (!user) {
         return {
           message: "There is no user with this email",
