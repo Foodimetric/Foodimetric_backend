@@ -422,14 +422,32 @@ class UserController {
                 return res.status(400).json({ message: "One of you already has a partner." });
             }
 
-            // Link both users as partners
-            user.partner = sender._id;
-            sender.partner = user._id;
-
             invite.status = "accepted";
 
-            await user.save();
-            await sender.save();
+            // Atomically update both users' documents
+            const bulkOps = [
+                // Update the accepting user
+                {
+                    updateOne: {
+                        filter: { _id: userId },
+                        update: {
+                            $set: { partner: sender._id },
+                            $pull: { partnerInvites: { _id: inviteId } } // Remove the accepted invite
+                        }
+                    }
+                },
+                // Update the sender
+                {
+                    updateOne: {
+                        filter: { _id: sender._id },
+                        update: {
+                            $set: { partner: userId }
+                        }
+                    }
+                }
+            ];
+
+            await User.bulkWrite(bulkOps);
 
             return res.status(200).json({ message: "Invite accepted. You are now partners!" });
 
