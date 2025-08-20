@@ -102,6 +102,9 @@ route.get(
             longestStreak: req.user.longestStreak,
             healthProfile: req.user.healthProfile,
             isVerified: req.user.isVerified,
+            partnerInvites: req.user.partnerInvites,
+            partner: req.user.partner,
+            status: req.user.status
         };
 
         // ✅ Redirect with query params

@@ -355,7 +355,7 @@ class UserController {
             const { email } = req.body;
             const senderId = req.user._id; // assuming you’re using auth middleware
 
-            // check if sender already has a partner
+            // check if sender already has a partner 
             const sender = await User.findById(senderId);
             if ((sender.email || "").toLowerCase() === email) {
                 return res.status(400).json({ message: "You can't invite yourself" });
