@@ -104,7 +104,8 @@ route.get(
             isVerified: req.user.isVerified,
             partnerInvites: req.user.partnerInvites,
             partner: req.user.partner,
-            status: req.user.status
+            status: req.user.status,
+            notifications: req.user.notifications
         };
 
         // ✅ Redirect with query params
