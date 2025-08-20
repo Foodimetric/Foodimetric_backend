@@ -374,7 +374,7 @@ class UserController {
 
                 // Send email
                 const inviteService = new PartnerInviteEmailService();
-                await inviteService.sendInvite(receiverEmail, referralLink, sender.name || "A Foodimetric user");
+                await inviteService.sendInvite(email, referralLink, sender.firstName || "A Foodimetric user");
 
                 return res.status(200).json({
                     message: "User not found. Invite email sent with referral link.",
