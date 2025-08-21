@@ -820,13 +820,53 @@ class AdminController {
                         let: { userId: "$_id" },
                         pipeline: [
                             { $match: { $expr: { $eq: ["$user_id", "$$userId"] } } },
-                            { $sort: { timestamp: -1 } },  // latest first
-                            { $limit: 1 }
+                            { $sort: { timestamp: -1 } }, // Sorts by timestamp, placing missing timestamps last
+                            { $limit: 3 } // Change this value to 3
                         ],
-                        as: "latestFoodLog"
+                        as: "latestFoodLogs" // Consider changing the alias to reflect a list
                     }
                 },
-                { $unwind: { path: "$latestFoodLog", preserveNullAndEmptyArrays: true } }
+                // { $unwind: { path: "$latestFoodLog", preserveNullAndEmptyArrays: true } }
+
+                {
+                    $lookup: {
+                        from: "users", // The collection name for your User model is 'users'
+                        localField: "partner", // The field on the current document to look up
+                        foreignField: "_id", // The field on the 'users' collection to match against
+                        as: "partnerDetails"
+                    }
+                },
+                { $unwind: { path: "$partnerDetails", preserveNullAndEmptyArrays: true } },
+                // Project the final output to include the partner's details
+                {
+                    $project: {
+                        // Keep all existing fields
+                        _id: 1, // Don't forget to re-add _id if you use $project a second time
+                        firstName: 1,
+                        lastName: 1,
+                        email: 1,
+                        usage: 1,
+                        lastUsageDate: 1,
+                        location: 1,
+                        isVerified: 1,
+                        category: 1,
+                        googleId: 1,
+                        credits: 1,
+                        healthProfile: 1,
+                        streak: 1,
+                        longestStreak: 1,
+                        status: 1,
+                        notifications: 1,
+                        partner: 1,
+                        partnerInvites: 1,
+                        fcmTokens: 1,
+                        latestCalculation: 1,
+                        latestFoodLogs: 1,
+                        // Project the specific partner fields you need
+                        "partnerDetails.firstName": 1,
+                        "partnerDetails.email": 1
+                    }
+                }
             ]);
 
             return res.json({
