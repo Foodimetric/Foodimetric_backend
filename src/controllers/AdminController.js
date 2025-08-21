@@ -791,7 +791,12 @@ class AdminController {
                         credits: 1,
                         healthProfile: 1,
                         streak: 1,
-                        longestStreak: 1
+                        longestStreak: 1,
+                        status: 1,
+                        notifications: 1,
+                        partner: 1,
+                        partnerInvites: 1,
+                        fcmTokens: 1
                     }
                 },
                 // Lookup latest calculation
@@ -811,7 +816,7 @@ class AdminController {
                 // Lookup latest food log
                 {
                     $lookup: {
-                        from: "fooddiaries",
+                        from: "diaries",
                         let: { userId: "$_id" },
                         pipeline: [
                             { $match: { $expr: { $eq: ["$user_id", "$$userId"] } } },
