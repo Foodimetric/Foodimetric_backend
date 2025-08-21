@@ -546,6 +546,10 @@ class UserController {
             if (!invite) {
                 return res.status(404).json({ message: "Invite not found." });
             }
+            const senderId = invite.from;
+
+            console.log("log", senderId);
+
 
             invite.status = "rejected";
             const bulkOps = [
