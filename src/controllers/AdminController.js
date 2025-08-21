@@ -1154,7 +1154,7 @@ class AdminController {
         }
     }
 
-    async resetInactiveStreaks() {
+    async resetInactiveStreaks(req, res) {
         try {
             const today = new Date();
             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -1187,12 +1187,21 @@ class AdminController {
             if (bulkOps.length > 0) {
                 await User.bulkWrite(bulkOps);
                 console.log(`Successfully reset streaks for ${bulkOps.length} users.`);
+                return res.status(200).json({
+                    message: `Successfully reset streaks for ${bulkOps.length} users.`,
+                    resetCount: bulkOps.length
+                });
             } else {
                 console.log('No user streaks needed to be reset today.');
+                return res.status(200).json({
+                    message: 'No user streaks needed to be reset today.',
+                    resetCount: 0
+                });
             }
 
         } catch (error) {
             console.error("Error resetting inactive streaks:", error);
+            return res.status(500).json({ message: "Error resetting inactive streaks.", error: error.message });
         }
     };
 }
