@@ -97,7 +97,8 @@ route.get(
         console.log("🔍 Google callback query params:", req.query);
         next();
     },
-    passport.authenticate("google", { session: false }),
+    // passport.authenticate("google", { session: false }),
+    passport.authenticate("google"),
     async (req, res) => {
         if (!req.user) {
             return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
