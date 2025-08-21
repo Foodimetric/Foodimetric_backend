@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const User = require("../models/user.models");
 
 const route = require("express").Router();
 const userController = new UserController()
@@ -65,9 +66,25 @@ route.post("/verify-user", userController.verifyUser)
 route.get("/users/emails", userController.getAllUserEmails);
 route.post("/newsletter/subscribe", (req, res) => newsletterController.subscribe(req, res));
 route.delete("/users/delete", requireLogin, (req, res) => userController.deleteAccount(req, res));
+// route.get(
+//     "/google",
+//     passport.authenticate("google", { scope: ["profile", "email"] })
+// );
+
 route.get(
     "/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
+    (req, res, next) => {
+        // Capture the ref query parameter from the initial request
+        const refParam = req.query.ref;
+        // Pass it to the next middleware (passport) in the state option
+        req.session.googleAuthState = { ref: refParam };
+        next();
+    },
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        // Pass the state to Google's auth URL
+        state: req.session.googleAuthState ? JSON.stringify(req.session.googleAuthState) : undefined
+    })
 );
 
 // Callback route for Google to redirect to
@@ -78,11 +95,37 @@ route.get(
         next();
     },
     passport.authenticate("google", { session: false }),
-    (req, res) => {
+    async (req, res) => {
         if (!req.user) {
             return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
         }
 
+        let referralId = null;
+        if (req.query.state) {
+            try {
+                const state = JSON.parse(req.query.state);
+                referralId = state.ref;
+            } catch (err) {
+                console.error("Error parsing state from Google callback:", err);
+            }
+        }
+
+        const newUser = req.user;
+
+        if (referralId && newUser) {
+            try {
+                const sender = await User.findById(referralId);
+                if (sender && !sender.partner) {
+                    await User.bulkWrite([
+                        { updateOne: { filter: { _id: newUser._id }, update: { $set: { partner: sender._id } } } },
+                        { updateOne: { filter: { _id: sender._id }, update: { $set: { partner: newUser._id }, $pull: { partnerInvites: { from: newUser._id } } } } }
+                    ]);
+                    console.log(`Partner relationship established via Google sign-up between ${sender.firstName} and ${newUser.firstName}`);
+                }
+            } catch (err) {
+                console.error("Error linking Google-signed-up partner accounts:", err);
+            }
+        }
         // ✅ Generate token
         const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 

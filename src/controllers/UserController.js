@@ -41,13 +41,91 @@ class UserController {
         let result = await userRepository.signIn(email, password)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
+    // async signUp(req, res) {
+    //     const { referralId } = req.body;
+    //     const content = req.body
+    //     console.log(content)
+    //     content.category = content.category || 0;
+    //     let result = await userRepository.signUp(content)
+    //     console.log(result)
+    //     if (referralId) {
+    //         // Find the sender
+    //         const sender = await User.findById(referralId);
+
+    //         // Link both users as partners
+    //         if (sender && !sender.partner) {
+    //             // Use a bulk operation to update both users in one go for data consistency
+    //             await User.bulkWrite([
+    //                 {
+    //                     updateOne: {
+    //                         filter: { _id: newUser._id },
+    //                         update: { $set: { partner: sender._id } },
+    //                     },
+    //                 },
+    //                 {
+    //                     updateOne: {
+    //                         filter: { _id: sender._id },
+    //                         update: {
+    //                             $set: { partner: newUser._id },
+    //                             // Remove any pending invites from the sender to the new user
+    //                             $pull: { partnerInvites: { from: newUser._id } }
+    //                         },
+    //                     },
+    //                 },
+    //             ]);
+    //             console.log(`Partner relationship established between ${sender.firstName} and ${newUser.firstName}`);
+    //         }
+    //     }
+
+    //     certainRespondMessage(res, result.payload, result.message, result.responseStatus)
+    // }
+
     async signUp(req, res) {
-        const content = req.body
-        console.log(content)
+        const { referralId } = req.body;
+        const content = req.body;
+
+        // Set category to 0 if it's not provided
         content.category = content.category || 0;
-        let result = await userRepository.signUp(content)
-        console.log(result)
-        certainRespondMessage(res, result.payload, result.message, result.responseStatus)
+
+        // Call the userRepository.signUp function and get the result
+        let result = await userRepository.signUp(content);
+
+        // Extract the new user object from the result payload
+        const newUser = result.payload;
+
+        // Only proceed with linking if a referralId exists AND the new user was created successfully
+        if (referralId && newUser) {
+            try {
+                // Find the sender
+                const sender = await User.findById(referralId);
+
+                // Link both users as partners if the sender exists and doesn't already have a partner
+                if (sender && !sender.partner) {
+                    await User.bulkWrite([
+                        {
+                            updateOne: {
+                                filter: { _id: newUser._id },
+                                update: { $set: { partner: sender._id } },
+                            },
+                        },
+                        {
+                            updateOne: {
+                                filter: { _id: sender._id },
+                                update: {
+                                    $set: { partner: newUser._id },
+                                    $pull: { partnerInvites: { from: newUser._id } }
+                                },
+                            },
+                        },
+                    ]);
+                    console.log(`Partner relationship established between ${sender.firstName} and ${newUser.firstName}`);
+                }
+            } catch (err) {
+                console.error("Error linking partner accounts:", err);
+            }
+        }
+
+        certainRespondMessage(res, result.payload, result.message, result.responseStatus);
     }
 
     async saveFcmToken(req, res) {
