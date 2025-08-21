@@ -1160,9 +1160,17 @@ class AdminController {
             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
             // Find all users who have not logged food since the start of yesterday
+            // const usersToReset = await User.find({
+            //     // Check if the user's last log date is older than yesterday
+            //     lastLogDate: { $lt: startOfToday }
+            // });
+
+            // Find all users who have not logged food since the start of yesterday AND whose streak is not already zero
             const usersToReset = await User.find({
                 // Check if the user's last log date is older than yesterday
-                lastLogDate: { $lt: startOfToday }
+                lastLogDate: { $lt: startOfToday },
+                // Only select users whose streak is not already 0
+                streak: { $ne: 0 }
             });
 
             const bulkOps = usersToReset.map(user => {
