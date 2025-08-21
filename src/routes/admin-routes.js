@@ -4,8 +4,8 @@ const { AdminController } = require('../controllers/AdminController');
 const authenticateAdmin = require("../middleware/authenticateAdmin");
 
 const adminController = new AdminController();
-adminController.resetInactiveStreaks();
 
+router.get("/reset-streaks", adminController.resetInactiveStreaks)
 router.post('/login', adminController.login);
 router.post("/login-verify", adminController.otpVerify);
 router.post("/resend-otp", adminController.resendOtp);
