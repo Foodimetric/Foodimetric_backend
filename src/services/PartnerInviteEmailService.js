@@ -18,26 +18,43 @@ class PartnerInviteEmailService {
         const mailOptions = {
             from: `Foodimetric <${process.env.EMAIL_ADDRESS}>`,
             to: toEmail,
-            subject: "Join Foodimetric as my accountability partner",
+            subject: `You've been invited to Foodimetric by ${senderName}!`,
             html: `
-                <div style="font-family: Arial, sans-serif; color: #333;">
-                    <h2>👋 Hello!</h2>
-                    <p><strong>${senderName}</strong> has invited you to become their Foodimetric accountability partner.</p>
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; background-color: #f9fafb; padding: 24px; text-align: center;">
+                    <table style="width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 32px;">
+                        <tr>
+                            <td align="center">
+                                <h1 style="color: #147E03; font-size: 24px; font-weight: 700; margin: 0 0 16px;">Foodimetric</h1>
+                                <h2 style="color: #1a202c; font-size: 20px; font-weight: 600; line-height: 1.4; margin: 0 0 24px;">
+                                    You have a new partner invite!
+                                </h2>
+                                
+                                <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px;">
+                                    Hey there! Your friend <strong style="color: #1a202c;">${senderName}</strong> wants you to join them on their health journey with Foodimetric.
+                                </p>
+                                
+                                <p style="font-size: 16px; color: #4a5568; line-height: 1.6; margin: 0 0 24px;">
+                                    Foodimetric is the perfect app to track nutrition, log meals, and stay on top of your health goals. And what's better than doing it together? As accountability partners, you can motivate each other to stay consistent and hit your milestones.
+                                </p>
+
+                                <a href="${referralLink}" style="display: inline-block; padding: 14px 28px; background-color: #147E03; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin: 0 0 24px;">
+                                    Accept Invite & Join
+                                </a>
+
+                                <p style="font-size: 14px; color: #718096; margin: 0;">
+                                    Can't click the button? Copy and paste this link into your browser:
+                                </p>
+                                <p style="font-size: 12px; color: #147E03; word-break: break-all;">
+                                    ${referralLink}
+                                </p>
+                                
+                            </td>
+                        </tr>
+                    </table>
                     
-                    <p>Foodimetric helps track nutrition, food diaries, and health goals. As accountability partners, you’ll keep each other motivated on your health journey.</p>
-                    
-                    <p style="margin-top:20px;">
-                        <a href="${referralLink}" style="background:#147E03; color:white; padding:12px 20px; text-decoration:none; border-radius:6px;">
-                            Accept Invite & Sign Up
-                        </a>
+                    <p style="font-size: 14px; color: #718096; margin-top: 24px;">
+                        Stay healthy,<br>The Foodimetric Team
                     </p>
-                    
-                    <p style="margin-top:20px; font-size: 0.9em; color:#666;">
-                        Or copy this link into your browser: <br>
-                        ${referralLink}
-                    </p>
-                    
-                    <p>Stay healthy,<br>💚 The Foodimetric Team</p>
                 </div>
             `,
         };
