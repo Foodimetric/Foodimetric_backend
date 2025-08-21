@@ -77,13 +77,16 @@ route.get(
         // Capture the ref query parameter from the initial request
         const refParam = req.query.ref;
         // Pass it to the next middleware (passport) in the state option
-        req.session.googleAuthState = { ref: refParam };
+        req?.session.googleAuthState = { ref: refParam };
         next();
     },
     passport.authenticate("google", {
         scope: ["profile", "email"],
         // Pass the state to Google's auth URL
-        state: req.session.googleAuthState ? JSON.stringify(req.session.googleAuthState) : undefined
+        state: (req) => {
+            // This function runs during the request, so `req` is now defined
+            return req.session.googleAuthState ? JSON.stringify(req.session.googleAuthState) : undefined;
+        }
     })
 );
 
