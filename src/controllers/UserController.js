@@ -552,6 +552,7 @@ class UserController {
 
 
             invite.status = "rejected";
+            const firstName = user.firstName.charAt(0).toUpperCase() + user.firstName.slice(1);
             const bulkOps = [
                 // Operation 1: Remove the invite from the recipient's invites array
                 {
@@ -570,7 +571,7 @@ class UserController {
                             $push: {
                                 notifications: {
                                     type: 'invite_rejected',
-                                    message: `Ah, ${user.firstName} no gree o! Your partner invitation has been declined.`
+                                    message: `Ah, ${firstName} no gree o! Your partner invitation has been declined.`
                                 }
                             }
                         }
