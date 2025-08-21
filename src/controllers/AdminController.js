@@ -1108,6 +1108,48 @@ class AdminController {
             res.status(500).json({ success: false, message: error.message });
         }
     }
+
+    async resetInactiveStreaks() {
+        try {
+            const today = new Date();
+            const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+            // Find all users who have not logged food since the start of yesterday
+            const usersToReset = await User.find({
+                // Check if the user's last log date is older than yesterday
+                lastLogDate: { $lt: startOfToday }
+            });
+
+            const bulkOps = usersToReset.map(user => {
+                // Check if the last log date was yesterday (to continue streak) or older (to reset)
+                const lastLogDate = new Date(user.lastLogDate);
+                const startOfYesterday = new Date(startOfToday);
+                startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+
+                // If the user's last log was NOT yesterday, their streak should be reset
+                // This logic is more robust than your current 'diffDays' calculation
+                if (lastLogDate.getTime() < startOfYesterday.getTime()) {
+                    return {
+                        updateOne: {
+                            filter: { _id: user._id },
+                            update: { $set: { streak: 0 } }
+                        }
+                    };
+                }
+                return null; // Don't perform an update if streak can be maintained
+            }).filter(op => op !== null); // Filter out the null values
+
+            if (bulkOps.length > 0) {
+                await User.bulkWrite(bulkOps);
+                console.log(`Successfully reset streaks for ${bulkOps.length} users.`);
+            } else {
+                console.log('No user streaks needed to be reset today.');
+            }
+
+        } catch (error) {
+            console.error("Error resetting inactive streaks:", error);
+        }
+    };
 }
 
 module.exports = { AdminController };
