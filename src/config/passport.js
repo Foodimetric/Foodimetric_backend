@@ -54,7 +54,7 @@ passport.use(
                 await user.save();
                 console.log("so na you dey cause wahala");
                 await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
-                const populatedNewUser = await User.findById(newUser._id)
+                const populatedNewUser = await User.findById(user._id)
                     .populate({
                         path: 'partner',
                         select: 'firstName lastName email streak longestStreak' // Add streak and longestStreak here
