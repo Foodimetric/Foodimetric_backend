@@ -565,6 +565,7 @@ class AdminController {
 
         try {
             const admin = await Admin.findOne({ email });
+            console.log("admin", admin, await bcrypt.compare(password, admin.password));
             if (!admin || !(await bcrypt.compare(password, admin.password))) {
                 return certainRespondMessage(res, false, "Invalid credentials", 401);
             }
