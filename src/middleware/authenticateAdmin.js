@@ -9,10 +9,12 @@ const authenticateAdmin = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== "admin") {
+    const allowedRoles = ["admin", "super-admin", "marketing", "developer"];
+
+    if (!allowedRoles.includes(decoded.role)) {
       return res.status(403).json({ success: false, message: "Unauthorized access." });
     }
-    req.admin = decoded;
+    req.user = decoded; // store user payload
     next();
   } catch (error) {
     return res.status(401).json({ success: false, message: "Invalid token." });
