@@ -68,6 +68,37 @@ class PromptController {
             res.status(500).json({ success: false, message: err.message });
         }
     }
+
+    async deletePrompt(req, res) {
+        try {
+            // Extract the category and the prompt to be deleted from the request body
+            const { category, prompt } = req.body;
+
+            if (![0, 1, 2, 3].includes(category)) {
+                return res.status(400).json({ success: false, message: "Invalid category" });
+            }
+
+            // Use findOneAndUpdate with the $pull operator to remove the prompt
+            const updated = await Prompt.findOneAndUpdate(
+                { category },
+                { $pull: { prompts: prompt } },
+                { new: true } // Return the updated document
+            );
+
+            // Check if the document was found and updated
+            if (!updated) {
+                return res.status(404).json({ success: false, message: "Category not found." });
+            }
+
+            res.status(200).json({
+                success: true,
+                message: "Prompt deleted successfully.",
+                data: updated
+            });
+        } catch (err) {
+            res.status(500).json({ success: false, message: err.message });
+        }
+    }
 }
 
 module.exports = new PromptController();

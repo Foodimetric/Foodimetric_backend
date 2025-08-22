@@ -1063,7 +1063,7 @@ class AdminController {
     async createAdmin(req, res) {
         try {
             // Check if requester is super-admin
-            if (req.admin.role !== "super-admin") {
+            if (req.user.role !== "super-admin") {
                 return res.status(403).json({ message: "Access denied. Only super-admins can create admins." });
             }
 
@@ -1084,7 +1084,7 @@ class AdminController {
             const newAdmin = new Admin({
                 name,
                 email,
-                password: await bcrypt.hash(admin.password, 10),
+                password: await bcrypt.hash(password, 10),
                 role: role || "admin",
             });
 

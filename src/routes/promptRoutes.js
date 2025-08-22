@@ -7,6 +7,7 @@ const authenticateAdmin = require("../middleware/authenticateAdmin");
 // Admin endpoints
 router.post("/prompts", authenticateAdmin, PromptController.upsertPrompts);
 router.get("/prompts", PromptController.getAllPrompts);
+router.post('/delete-prompt', authenticateAdmin, PromptController.deletePrompt);
 
 // Public/user endpoints
 router.get("/prompts/:category", PromptController.getPrompts);
