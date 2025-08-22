@@ -1084,7 +1084,7 @@ class AdminController {
             const newAdmin = new Admin({
                 name,
                 email,
-                password,
+                password: await bcrypt.hash(admin.password, 10),
                 role: role || "admin",
             });
 
