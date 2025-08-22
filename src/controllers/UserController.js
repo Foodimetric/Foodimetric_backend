@@ -93,8 +93,9 @@ class UserController {
         // Extract the new user object from the result payload
         const newUser = result.payload;
 
+        const validReferralId = referralId && referralId !== 'null' ? referralId : null;
         // Only proceed with linking if a referralId exists AND the new user was created successfully
-        if (referralId && newUser) {
+        if (validReferralId && newUser) {
             try {
                 // Find the sender
                 const sender = await User.findById(referralId);
