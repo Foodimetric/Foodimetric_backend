@@ -19,6 +19,7 @@ const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
 const { seedPrompts } = require('./prompt_seed');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
+const { verifyGoogleUsers } = require('./google_users');
 const { createAdmins } = require('./create_admin');
 const { creditUsers } = require('./credit_verified_users');
 const swaggerUi = require("swagger-ui-express");
@@ -100,6 +101,7 @@ connection.once('open', async () => {
   // createAdmins();
   // await creditUsers();
   // await seedPrompts();
+  await verifyGoogleUsers()
   console.log('Database running Successfully')
 })
 
