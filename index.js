@@ -101,7 +101,7 @@ connection.once('open', async () => {
   // createAdmins();
   // await creditUsers();
   // await seedPrompts();
-  await verifyGoogleUsers()
+  // await verifyGoogleUsers()
   console.log('Database running Successfully')
 })
 
