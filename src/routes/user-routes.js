@@ -176,5 +176,8 @@ route.post("/invite-partner", requireLogin, userController.sendInvite);
 route.post("/accept-invite/:id", requireLogin, userController.acceptInvite);
 // Decline invite
 route.post("/decline-invite/:id", requireLogin, userController.rejectInvite);
+route.patch("/restore-streak", requireLogin, userController.restoreStreak);
+route.patch("/remove-streak-partner", requireLogin, userController.removeStreakPartner);
+
 
 module.exports = route

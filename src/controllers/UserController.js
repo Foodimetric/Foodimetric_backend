@@ -549,6 +549,180 @@ class UserController {
             res.status(500).json({ message: "Error rejecting invite." });
         }
     };
+
+    // A new function to restore a user's streak for a fee.
+    async restoreStreak(req, res) {
+        try {
+            const userId = req.user._id; // Assuming middleware has attached the user to the request
+            const user = await User.findById(userId);
+
+            // Check if the user exists
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found."
+                });
+            }
+
+            // Check if the user has enough credits to restore the streak
+            const streakRestoreCost = 300;
+            if (user.credits < streakRestoreCost) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Insufficient credits. You need ${streakRestoreCost} credits to restore your streak.`
+                });
+            }
+
+            // Calculate days since the last login date
+            const lastLogDate = user.lastLogDate ? new Date(user.lastLogDate) : null;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+            let daysMissed = -1;
+
+            if (lastLogDate) {
+                const yesterday = new Date(today);
+                yesterday.setDate(today.getDate() - 1);
+
+                // Normalize lastLogDate to the start of its day
+                const lastLogDay = new Date(lastLogDate);
+                lastLogDay.setHours(0, 0, 0, 0);
+
+                // Check if the last log was exactly one day ago
+                if (lastLogDay.getTime() === yesterday.getTime()) {
+                    daysMissed = 1;
+                } else if (lastLogDay.getTime() < yesterday.getTime()) {
+                    // Missed more than one day
+                    daysMissed = Math.floor((today.getTime() - lastLogDay.getTime()) / (1000 * 60 * 60 * 24));
+                } else {
+                    // Last log date is today, no need to restore
+                    daysMissed = 0;
+                }
+            } else {
+                // User has never logged in before, streak is 0
+                return res.status(400).json({
+                    success: false,
+                    message: "You do not have a streak to restore."
+                });
+            }
+
+            // Check if the user missed exactly one day
+            if (daysMissed === 1) {
+                // Restore streak, deduct credits, and save
+                user.streak += 1; // Assuming  is the streak to be restored
+                user.credits -= streakRestoreCost;
+                await user.save();
+
+                return res.status(200).json({
+                    success: true,
+                    message: "Your streak has been successfully restored! A fee of 500 credits has been deducted.",
+                    payload: {
+                        newStreak: user.streak,
+                        newCredits: user.credits
+                    }
+                });
+            } else if (daysMissed === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Your streak is already active and does not need to be restored."
+                });
+            } else {
+                // Missed more than one day, cannot restore
+                user.streak = 0;
+                await user.save();
+                return res.status(400).json({
+                    success: false,
+                    message: `You missed ${daysMissed} days. Your streak has been reset to 0 and cannot be restored.`
+                });
+            }
+
+        } catch (error) {
+            console.error("Error restoring user streak:", error);
+            return res.status(500).json({
+                success: false,
+                message: "An internal server error occurred."
+            });
+        }
+    }
+
+    // A new function to handle removing a streak partner.
+    async removeStreakPartner(req, res) {
+        try {
+            const userId = req.user._id; // Assuming middleware has attached the user to the request
+            const user = await User.findById(userId);
+
+            // 1. Check if the user exists
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "User not found."
+                });
+            }
+
+            // 2. Check if the user has a streak partner
+            if (!user.partner) {
+                return res.status(400).json({
+                    success: false,
+                    message: "You do not have a streak partner to remove."
+                });
+            }
+
+            // Find the current partner's user document
+            const partnerId = user.partner;
+            const partnerUser = await User.findById(partnerId);
+
+            // 3. Check if the partner exists (in case of data inconsistency)
+            if (!partnerUser) {
+                // If partner user is not found, just clear the user's partner field
+                user.partner = null;
+                await user.save();
+
+                return res.status(404).json({
+                    success: false,
+                    message: "Partner not found. Your partnership has been removed."
+                });
+            }
+
+            // 4. Remove the partnership from both user documents
+            user.partner = null;
+            partnerUser.partner = null;
+
+            // 5. Create notifications for both users
+            const userNotification = {
+                type: 'partner_removed',
+                message: `Your partnership with ${partnerUser.firstName} has ended.`
+            };
+            const partnerNotification = {
+                type: 'partner_removed',
+                message: `Your partnership with ${user.firstName} has ended.`
+            };
+
+            // Add the notifications to their respective arrays
+            user.notifications.push(userNotification);
+            partnerUser.notifications.push(partnerNotification);
+
+            // Save both user documents in a single operation for consistency
+            await Promise.all([user.save(), partnerUser.save()]);
+
+            return res.status(200).json({
+                success: true,
+                message: `You have successfully ended your partnership with ${partnerUser.firstName}.`,
+                payload: {
+                    user: user,
+                    partner: partnerUser
+                }
+            });
+
+        } catch (error) {
+            console.error("Error removing streak partner:", error);
+            return res.status(500).json({
+                success: false,
+                message: "An internal server error occurred."
+            });
+        }
+    }
+
+
 }
 
 module.exports = {
