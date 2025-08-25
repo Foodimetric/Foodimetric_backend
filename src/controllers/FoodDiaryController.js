@@ -4,7 +4,6 @@ const { uploadFile } = require('../config/googleDrive');
 const fs = require("fs");
 
 class FoodDiaryController {
-
     // async createFood(req, res) {
     //     try {
     //         const { user_id } = req.body;
@@ -18,39 +17,55 @@ class FoodDiaryController {
     //         const todayDateOnly = today.toISOString().split("T")[0];
     //         const lastLogDate = user.lastLogDate ? user.lastLogDate.toISOString().split("T")[0] : null;
 
+    //         // This is a flag to determine if the streak was updated in this request
+    //         let streakWasUpdated = false;
+
     //         if (!lastLogDate) {
     //             // First log ever
     //             user.streak = 1;
+    //             streakWasUpdated = true;
     //         } else {
     //             const diffDays = Math.floor(
     //                 (new Date(todayDateOnly) - new Date(lastLogDate)) / (1000 * 60 * 60 * 24)
     //             );
 
-    //             if (diffDays === 0) {
-    //                 // Already logged today → do nothing
-    //             } else if (diffDays === 1) {
-    //                 user.streak += 1; // consecutive day
-    //             } else {
-    //                 user.streak = 1; // missed a day → reset streak
+    //             // ✅ NEW LOGIC: Check if the user missed EXACTLY one day.
+    //             if (diffDays === 1) {
+    //                 // If so, DO NOT log the food yet. Return a message to the frontend.
+    //                 return res.status(200).json({
+    //                     success: true,
+    //                     message: "You missed one day! Would you like to restore your streak for 500 credits?",
+    //                     canRestoreStreak: true
+    //                 });
+    //             } else if (diffDays > 1) {
+    //                 // User missed more than one day, streak is lost
+    //                 user.streak = 1;
+    //                 streakWasUpdated = true;
+    //             } else if (diffDays === 0) {
+    //                 // User already logged today, streak does not change
+    //                 streakWasUpdated = false;
     //             }
     //         }
 
+    //         // Update last log date and longest streak
     //         user.lastLogDate = todayDateOnly;
-
     //         if (user.streak > user.longestStreak) {
     //             user.longestStreak = user.streak;
     //         }
 
     //         await user.save();
 
-    //         // save food lo
+    //         // Save food log
     //         const food = await FoodDiaryRepository.createFood(foodData);
 
+    //         // Return the final response to the frontend
     //         res.status(201).json({
     //             message: "Food logged successfully",
     //             streak: user.streak,
     //             longestStreak: user.longestStreak,
     //             food,
+    //             streakUpdated: streakWasUpdated,
+    //             canRestoreStreak: false // This request is not for restoring streak
     //         });
 
     //     } catch (error) {
@@ -63,40 +78,48 @@ class FoodDiaryController {
             const { user_id } = req.body;
             const foodData = req.body;
 
-            // find user
+            // Find user
             const user = await User.findById(user_id);
-            if (!user) return res.status(404).json({ message: "User not found" });
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
 
             const today = new Date();
-            const todayDateOnly = today.toISOString().split("T")[0];
-            const lastLogDate = user.lastLogDate ? user.lastLogDate.toISOString().split("T")[0] : null;
+            // Normalize today's date to the start of the day for consistent calculations
+            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-            // This is a flag to determine if the streak was updated in this request
             let streakWasUpdated = false;
 
-            if (!lastLogDate) {
-                // First log ever
+            if (!user.lastLogDate) {
+                // First log ever, start the streak at 1
                 user.streak = 1;
                 streakWasUpdated = true;
             } else {
-                const diffDays = Math.floor(
-                    (new Date(todayDateOnly) - new Date(lastLogDate)) / (1000 * 60 * 60 * 24)
-                );
+                // Normalize the last log date to the start of its day
+                const lastLogDay = new Date(user.lastLogDate.getFullYear(), user.lastLogDate.getMonth(), user.lastLogDate.getDate());
 
-                // ✅ NEW LOGIC: Check if the user missed EXACTLY one day.
+                // Calculate the number of days passed since the last log
+                const diffTime = todayDateOnly.getTime() - lastLogDay.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
                 if (diffDays === 1) {
-                    // If so, DO NOT log the food yet. Return a message to the frontend.
+                    // User logged yesterday and today -> streak goes up
+                    user.streak += 1;
+                    streakWasUpdated = true;
+                } else if (diffDays === 2) {
+                    // User skipped exactly 1 day -> offer to restore
+                    // We DO NOT update the streak or lastLogDate here yet.
                     return res.status(200).json({
                         success: true,
                         message: "You missed one day! Would you like to restore your streak for 500 credits?",
                         canRestoreStreak: true
                     });
-                } else if (diffDays > 1) {
-                    // User missed more than one day, streak is lost
+                } else if (diffDays > 2) {
+                    // Missed more than one day, reset streak
                     user.streak = 1;
                     streakWasUpdated = true;
                 } else if (diffDays === 0) {
-                    // User already logged today, streak does not change
+                    // Already logged today, no change
                     streakWasUpdated = false;
                 }
             }
@@ -112,14 +135,13 @@ class FoodDiaryController {
             // Save food log
             const food = await FoodDiaryRepository.createFood(foodData);
 
-            // Return the final response to the frontend
             res.status(201).json({
                 message: "Food logged successfully",
                 streak: user.streak,
                 longestStreak: user.longestStreak,
                 food,
                 streakUpdated: streakWasUpdated,
-                canRestoreStreak: false // This request is not for restoring streak
+                canRestoreStreak: false
             });
 
         } catch (error) {

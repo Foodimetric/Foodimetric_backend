@@ -709,39 +709,24 @@ class AdminController {
         try {
             const today = new Date();
             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const startOfYesterday = new Date(startOfToday);
+            startOfYesterday.setDate(startOfYesterday.getDate() - 1);
 
-            // Find all users who have not logged food since the start of yesterday
-            // const usersToReset = await User.find({
-            //     // Check if the user's last log date is older than yesterday
-            //     lastLogDate: { $lt: startOfToday }
-            // });
-
-            // Find all users who have not logged food since the start of yesterday AND whose streak is not already zero
+            // This query finds users who have been inactive for MORE than one day.
+            // It's more efficient as it offloads the filtering to the database.
             const usersToReset = await User.find({
-                // Check if the user's last log date is older than yesterday
-                lastLogDate: { $lt: startOfToday },
-                // Only select users whose streak is not already 0
+                lastLogDate: { $lt: startOfYesterday },
                 streak: { $ne: 0 }
             });
 
             const bulkOps = usersToReset.map(user => {
-                // Check if the last log date was yesterday (to continue streak) or older (to reset)
-                const lastLogDate = new Date(user.lastLogDate);
-                const startOfYesterday = new Date(startOfToday);
-                startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-
-                // If the user's last log was NOT yesterday, their streak should be reset
-                // This logic is more robust than your current 'diffDays' calculation
-                if (lastLogDate.getTime() < startOfYesterday.getTime()) {
-                    return {
-                        updateOne: {
-                            filter: { _id: user._id },
-                            update: { $set: { streak: 0 } }
-                        }
-                    };
-                }
-                return null; // Don't perform an update if streak can be maintained
-            }).filter(op => op !== null); // Filter out the null values
+                return {
+                    updateOne: {
+                        filter: { _id: user._id },
+                        update: { $set: { streak: 0 } }
+                    }
+                };
+            });
 
             if (bulkOps.length > 0) {
                 await User.bulkWrite(bulkOps);
