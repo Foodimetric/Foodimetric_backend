@@ -164,10 +164,23 @@ class UserRepository {
       return null;
     }
 
-    let user = await this.Model.findById(_id);
-    user.isVerified = true;
-    user.credits = 1000;
-    user = await this.editProfile(user, user);
+    const user = await this.Model.findByIdAndUpdate(
+      _id,
+      {
+        $set: {
+          isVerified: true,
+          credits: 1000
+        }
+      },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!user) {
+      return {
+        message: "User not found",
+        payload: null
+      };
+    }
     console.log(user);
     console.log("no be me oo dey cause wahala", user.email);
     await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)

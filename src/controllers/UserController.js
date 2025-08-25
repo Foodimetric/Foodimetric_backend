@@ -41,45 +41,6 @@ class UserController {
         let result = await userRepository.signIn(email, password)
         certainRespondMessage(res, result.payload, result.message, result.responseStatus)
     }
-    // async signUp(req, res) {
-    //     const { referralId } = req.body;
-    //     const content = req.body
-    //     console.log(content)
-    //     content.category = content.category || 0;
-    //     let result = await userRepository.signUp(content)
-    //     console.log(result)
-    //     if (referralId) {
-    //         // Find the sender
-    //         const sender = await User.findById(referralId);
-
-    //         // Link both users as partners
-    //         if (sender && !sender.partner) {
-    //             // Use a bulk operation to update both users in one go for data consistency
-    //             await User.bulkWrite([
-    //                 {
-    //                     updateOne: {
-    //                         filter: { _id: newUser._id },
-    //                         update: { $set: { partner: sender._id } },
-    //                     },
-    //                 },
-    //                 {
-    //                     updateOne: {
-    //                         filter: { _id: sender._id },
-    //                         update: {
-    //                             $set: { partner: newUser._id },
-    //                             // Remove any pending invites from the sender to the new user
-    //                             $pull: { partnerInvites: { from: newUser._id } }
-    //                         },
-    //                     },
-    //                 },
-    //             ]);
-    //             console.log(`Partner relationship established between ${sender.firstName} and ${newUser.firstName}`);
-    //         }
-    //     }
-
-    //     certainRespondMessage(res, result.payload, result.message, result.responseStatus)
-    // }
-
     async signUp(req, res) {
         const { referralId } = req.body;
         const content = req.body;
