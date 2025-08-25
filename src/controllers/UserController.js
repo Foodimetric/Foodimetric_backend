@@ -722,6 +722,36 @@ class UserController {
         }
     }
 
+    async markAllNotificationsAsRead(req, res) {
+
+        const userId = req.user._id;
+
+        // Find the user by their ID and update all notifications.
+        // The $set operator is used to update fields within the notifications array.
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+                $set: { "notifications.$[elem].read": true }
+            },
+            {
+                new: true, // Return the updated document
+                arrayFilters: [{ "elem.read": false }] // Filter to update only unread notifications
+            }
+        );
+
+        if (!updatedUser) {
+            res.status(404);
+            throw new Error("User not found.");
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "All notifications marked as read.",
+            user: updatedUser
+        });
+    };
+
+
 
 }
 

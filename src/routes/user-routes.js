@@ -178,6 +178,7 @@ route.post("/accept-invite/:id", requireLogin, userController.acceptInvite);
 route.post("/decline-invite/:id", requireLogin, userController.rejectInvite);
 route.patch("/restore-streak", requireLogin, userController.restoreStreak);
 route.patch("/remove-streak-partner", requireLogin, userController.removeStreakPartner);
+route.patch("/notifications/mark-all-read", requireLogin, userController.markAllNotificationsAsRead);
 
 
 module.exports = route
