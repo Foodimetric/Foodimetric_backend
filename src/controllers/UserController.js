@@ -689,11 +689,11 @@ class UserController {
 
             // 5. Create notifications for both users
             const userNotification = {
-                type: 'partner_removed',
+                type: 'partner_request',
                 message: `Your partnership with ${partnerUser.firstName} has ended.`
             };
             const partnerNotification = {
-                type: 'partner_removed',
+                type: 'partner_request',
                 message: `Your partnership with ${user.firstName} has ended.`
             };
 
