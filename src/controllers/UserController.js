@@ -550,6 +550,102 @@ class UserController {
         }
     };
 
+    // // A new function to restore a user's streak for a fee.
+    // async restoreStreak(req, res) {
+    //     try {
+    //         const userId = req.user._id; // Assuming middleware has attached the user to the request
+    //         const user = await User.findById(userId);
+
+    //         // Check if the user exists
+    //         if (!user) {
+    //             return res.status(404).json({
+    //                 success: false,
+    //                 message: "User not found."
+    //             });
+    //         }
+
+    //         // Check if the user has enough credits to restore the streak
+    //         const streakRestoreCost = 300;
+    //         if (user.credits < streakRestoreCost) {
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message: `Insufficient credits. You need ${streakRestoreCost} credits to restore your streak.`
+    //             });
+    //         }
+
+    //         // Calculate days since the last login date
+    //         const lastLogDate = user.lastLogDate ? new Date(user.lastLogDate) : null;
+    //         const today = new Date();
+    //         today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+    //         let daysMissed = -1;
+
+    //         if (lastLogDate) {
+    //             const yesterday = new Date(today);
+    //             yesterday.setDate(today.getDate() - 1);
+
+    //             // Normalize lastLogDate to the start of its day
+    //             const lastLogDay = new Date(lastLogDate);
+    //             lastLogDay.setHours(0, 0, 0, 0);
+
+    //             // Check if the last log was exactly one day ago
+    //             if (lastLogDay.getTime() === yesterday.getTime()) {
+    //                 daysMissed = 1;
+    //             } else if (lastLogDay.getTime() < yesterday.getTime()) {
+    //                 // Missed more than one day
+    //                 daysMissed = Math.floor((today.getTime() - lastLogDay.getTime()) / (1000 * 60 * 60 * 24));
+    //             } else {
+    //                 // Last log date is today, no need to restore
+    //                 daysMissed = 0;
+    //             }
+    //         } else {
+    //             // User has never logged in before, streak is 0
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message: "You do not have a streak to restore."
+    //             });
+    //         }
+
+    //         // Check if the user missed exactly one day
+    //         if (daysMissed === 1) {
+    //             // Restore streak, deduct credits, and save
+    //             user.streak += 1; // Assuming  is the streak to be restored
+    //             user.credits -= streakRestoreCost;
+    //             await user.save();
+
+    //             return res.status(200).json({
+    //                 success: true,
+    //                 message: "Your streak has been successfully restored! A fee of 500 credits has been deducted.",
+    //                 payload: {
+    //                     newStreak: user.streak,
+    //                     newCredits: user.credits
+    //                 }
+    //             });
+    //         } else if (daysMissed === 0) {
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message: "Your streak is already active and does not need to be restored."
+    //             });
+    //         } else {
+    //             // Missed more than one day, cannot restore
+    //             user.streak = 0;
+    //             await user.save();
+    //             return res.status(400).json({
+    //                 success: false,
+    //                 message: `You missed ${daysMissed} days. Your streak has been reset to 0 and cannot be restored.`
+    //             });
+    //         }
+
+    //     } catch (error) {
+    //         console.error("Error restoring user streak:", error);
+    //         return res.status(500).json({
+    //             success: false,
+    //             message: "An internal server error occurred."
+    //         });
+    //     }
+    // }
+
+
     // A new function to restore a user's streak for a fee.
     async restoreStreak(req, res) {
         try {
@@ -573,66 +669,56 @@ class UserController {
                 });
             }
 
-            // Calculate days since the last login date
-            const lastLogDate = user.lastLogDate ? new Date(user.lastLogDate) : null;
             const today = new Date();
-            today.setHours(0, 0, 0, 0); // Normalize to start of day
+            // Normalize today's date to the start of the day for consistent calculations
+            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
             let daysMissed = -1;
 
-            if (lastLogDate) {
-                const yesterday = new Date(today);
-                yesterday.setDate(today.getDate() - 1);
+            if (user.lastLogDate) {
+                // Normalize the last log date to the start of its day
+                const lastLogDay = new Date(user.lastLogDate.getFullYear(), user.lastLogDate.getMonth(), user.lastLogDate.getDate());
 
-                // Normalize lastLogDate to the start of its day
-                const lastLogDay = new Date(lastLogDate);
-                lastLogDay.setHours(0, 0, 0, 0);
-
-                // Check if the last log was exactly one day ago
-                if (lastLogDay.getTime() === yesterday.getTime()) {
-                    daysMissed = 1;
-                } else if (lastLogDay.getTime() < yesterday.getTime()) {
-                    // Missed more than one day
-                    daysMissed = Math.floor((today.getTime() - lastLogDay.getTime()) / (1000 * 60 * 60 * 24));
-                } else {
-                    // Last log date is today, no need to restore
-                    daysMissed = 0;
-                }
+                // Calculate the number of days passed since the last log
+                const diffTime = todayDateOnly.getTime() - lastLogDay.getTime();
+                daysMissed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             } else {
-                // User has never logged in before, streak is 0
+                // User has never logged in before, no streak to restore
                 return res.status(400).json({
                     success: false,
                     message: "You do not have a streak to restore."
                 });
             }
 
-            // Check if the user missed exactly one day
-            if (daysMissed === 1) {
+            // Check if the user missed exactly one day (the number of days passed is 2)
+            if (daysMissed === 2) {
                 // Restore streak, deduct credits, and save
-                user.streak += 1; // Assuming  is the streak to be restored
+                user.streak += 1; // Increment the streak from its last value
                 user.credits -= streakRestoreCost;
                 await user.save();
 
                 return res.status(200).json({
                     success: true,
-                    message: "Your streak has been successfully restored! A fee of 500 credits has been deducted.",
+                    message: `Your streak has been successfully restored! A fee of ${streakRestoreCost} credits has been deducted.`,
                     payload: {
                         newStreak: user.streak,
                         newCredits: user.credits
                     }
                 });
-            } else if (daysMissed === 0) {
+            } else if (daysMissed === 0 || daysMissed === 1) {
                 return res.status(400).json({
                     success: false,
                     message: "Your streak is already active and does not need to be restored."
                 });
             } else {
                 // Missed more than one day, cannot restore
+                // In a real-world scenario, you'd likely want to handle this differently
+                // as the automated reset function will already set the streak to 0.
                 user.streak = 0;
                 await user.save();
                 return res.status(400).json({
                     success: false,
-                    message: `You missed ${daysMissed} days. Your streak has been reset to 0 and cannot be restored.`
+                    message: `You missed ${daysMissed - 1} days. Your streak cannot be restored.`
                 });
             }
 
