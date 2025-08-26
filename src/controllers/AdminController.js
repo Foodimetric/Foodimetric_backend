@@ -712,12 +712,15 @@ class AdminController {
             const startOfYesterday = new Date(startOfToday);
             startOfYesterday.setDate(startOfYesterday.getDate() - 1);
 
+            console.log(`Resetting streaks for users inactive since: ${startOfYesterday}`);
             // This query finds users who have been inactive for MORE than one day.
             // It's more efficient as it offloads the filtering to the database.
             const usersToReset = await User.find({
                 lastLogDate: { $lt: startOfYesterday },
                 streak: { $ne: 0 }
             });
+
+            console.log(`Found ${usersToReset} users to reset streaks for.`);
 
             const bulkOps = usersToReset.map(user => {
                 return {
