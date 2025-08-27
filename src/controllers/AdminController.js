@@ -710,7 +710,7 @@ class AdminController {
             const today = new Date();
             const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             const startOfYesterday = new Date(startOfToday);
-            startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+            startOfYesterday.setDate(startOfYesterday.getDate() - 2);
 
             console.log(`Resetting streaks for users inactive since: ${startOfYesterday}`);
             // This query finds users who have been inactive for MORE than one day.
@@ -720,7 +720,7 @@ class AdminController {
                 streak: { $ne: 0 }
             });
 
-            console.log(`Found ${usersToReset} users to reset streaks for.`);
+            console.log(`Found ${usersToReset.length} users to reset streaks for.`);
 
             const bulkOps = usersToReset.map(user => {
                 return {
