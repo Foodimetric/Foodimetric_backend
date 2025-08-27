@@ -111,7 +111,7 @@ class FoodDiaryController {
                     // We DO NOT update the streak or lastLogDate here yet.
                     return res.status(200).json({
                         success: true,
-                        message: "You missed one day! Would you like to restore your streak for 500 credits?",
+                        message: "You missed one day! Would you like to restore your streak for 300 credits?",
                         canRestoreStreak: true
                     });
                 } else if (diffDays > 2) {
