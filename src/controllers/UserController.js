@@ -604,6 +604,7 @@ class UserController {
                 // Restore streak, deduct credits, and save
                 user.streak += 1; // Increment the streak from its last value
                 user.credits -= streakRestoreCost;
+                user.lastLogDate = todayDateOnly; // Update last log date to today
                 await user.save();
 
                 return res.status(200).json({
