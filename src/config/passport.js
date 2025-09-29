@@ -53,7 +53,6 @@ passport.use(
 
                 await user.save();
                 console.log("so na you dey cause wahala");
-                await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
                 const populatedNewUser = await User.findById(user._id)
                     .populate({
                         path: 'partner',
@@ -63,7 +62,7 @@ passport.use(
                         path: 'partnerInvites.from',
                         select: 'firstName lastName email'
                     });
-
+                await welcomeEmailService.sendWelcomeDetails(user.email, user.firstName)
                 return done(null, populatedNewUser);
             } catch (err) {
                 console.error("❌ Error in Google OAuth Strategy:", err);

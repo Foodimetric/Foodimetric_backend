@@ -74,7 +74,7 @@ async function generateAndSendOtp(admin, email) {
     admin.loginOtp = otp;
     admin.otpExpiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
     await admin.save();
-    await otpService.OtpDetails(email, otp);
+    // await otpService.OtpDetails(email, otp);
     return otp;
 }
 
@@ -119,8 +119,8 @@ class AdminController {
                 return certainRespondMessage(res, false, "Invalid credentials", 401);
             }
 
-            await generateAndSendOtp(admin, admin.email);
-            return res.json({ success: true, message: "OTP sent to email" });
+            const otp = await generateAndSendOtp(admin, admin.email);
+            return res.json({ success: true, message: `OTP sent : ${otp}` });
         } catch (error) {
             return certainRespondMessage(res, false, "Server error", 500);
         }
