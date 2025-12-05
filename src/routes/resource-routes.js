@@ -1,17 +1,18 @@
 const { ResourceController } = require("../controllers/ResourceController.js");
 const route = require("express").Router();
+const resourceController = new ResourceController()
 
 
 // Public
-route.get("/resources", ResourceController.getAll);
-route.get("/resources/category/:category", ResourceController.getByCategory);
+route.get("/resources", resourceController.getAll);
+route.get("/resources/category/:category", resourceController.getByCategory);
 
 // Likes
-route.post("/resources/:id/like", ResourceController.like);
+route.post("/resources/:id/like", resourceController.like);
 
 // Admin
-route.post("/admin/resources", ResourceController.create);
-route.put("/admin/resources/:id", ResourceController.update);
-route.delete("/admin/resources/:id", ResourceController.delete);
+route.post("/admin/resources", resourceController.create);
+route.put("/admin/resources/:id", resourceController.update);
+route.delete("/admin/resources/:id", resourceController.delete);
 
 module.exports = route; 
