@@ -1,4 +1,4 @@
-const Resource = require("../models/westafrica.models")
+const Resource = require("../models/resource.models")
 
 
 class ResourceController {
