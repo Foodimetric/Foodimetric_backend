@@ -2,6 +2,7 @@ const User = require("../models/user.models")
 const Anthro = require("../models/anthropometric")
 const Diary = require("../models/diary.model")
 const Usage = require("../models/usage.model")
+const Message = require("../models/message")
 const { PartnerInviteEmailService } = require("../services/PartnerInviteEmailService")
 const Contact = require("../models/contact.model");
 const UserRepository = require("../repositories/UserRepository");
@@ -283,6 +284,16 @@ class UserController {
             ]);
 
             const user = await User.findById(req.user._id, "usage lastUsageDate");
+            const startOf2025 = new Date('2025-01-01T00:00:00Z');
+            const endOf2025 = new Date('2025-12-31T23:59:59Z');
+
+            const calculations2025 = await Anthro.countDocuments({
+                user_id: req.user._id,
+                timestamp: { $gte: startOf2025, $lte: endOf2025 }
+            });
+
+            const totalMessages = await Message.countDocuments({ userId: req.user._id });
+
 
             res.status(200).json({
                 message: "Analytics fetched successfully",
@@ -292,6 +303,9 @@ class UserController {
                     mostUsedCalculator: mostUsedCalculator.length > 0 ? mostUsedCalculator[0]._id : 0,
                     platformUsage: user.usage || 0,
                     calculationBreakdown: calculationBreakdown,
+                    // Calculations only for 2025
+                    totalCalculations: calculations2025,
+                    totalMessages: totalMessages
                 }
             });
         } catch (error) {
