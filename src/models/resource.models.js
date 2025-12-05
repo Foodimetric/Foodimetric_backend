@@ -18,5 +18,5 @@ const ResourceSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+module.exports = mongoose.model("Resource", ResourceSchema);
 
-export default mongoose.model("Resource", ResourceSchema);
