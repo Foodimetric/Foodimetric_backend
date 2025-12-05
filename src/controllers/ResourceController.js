@@ -132,4 +132,6 @@ class ResourceController {
     }
 }
 
-export default new ResourceController();
+module.exports = {
+    ResourceController
+}
