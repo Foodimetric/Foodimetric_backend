@@ -1,4 +1,4 @@
-const Resource = require("../models/resource.models")
+import Resource from "../models/resource.models.js";
 
 
 class ResourceController {
