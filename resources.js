@@ -4,7 +4,7 @@ const allResources = [
     {
         id: "inherited-eating-habits",
         image:
-            "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&h=600&fit=crop",
+            "https://res.cloudinary.com/dqf23mtna/image/upload/v1764973102/Breaking_Inherited_Eating_Habits_How_to_Rebuild_a_Healthy_Nutrition_Pattern_for_Modern_Living_l5ze7m.webp",
         category: "ARTICLES",
         date: "02/12/2025",
         title:
@@ -120,7 +120,7 @@ but you will pass on to the next generation.`,
     {
         id: "how-ai-is-shaping-the-future-of-nutrition-in-africa",
         image:
-            "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&h=600&fit=crop",
+            "https://res.cloudinary.com/dqf23mtna/image/upload/v1764973462/How_AI_is_haping_he_future_of_nutrtion_page-0001_zt13vr.webp",
         category: "ARTICLES",
         date: "01/08/2025",
         title:
