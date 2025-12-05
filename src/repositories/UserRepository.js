@@ -81,29 +81,69 @@ class UserRepository {
 
   async signUp(userDetails) {
     // let password = userDetails.password;
+    // try {
+    //   let resp = await this.Model.findOne({ email: userDetails.email });
+    //   if (resp) {
+    //     // let hashedPassword = await bcrypt.hash(password, 8);
+    //     userDetails.password = null;
+    //     userDetails.category = userDetails.category || 0;
+    //     const newUser = new this.Model(userDetails);
+    //     let user = await newUser.save();
+    //     // const token = jwt.sign({ _id: user._id }, jwt_secret);
+    //     // await emailService.sendSignUpDetails(user.email, token);
+    //     return {
+    //       payload: { user },
+    //     };
+    //   } else {
+    //     return {
+    //       message: "User not Found",
+    //       responseStatus: 403,
+    //     };
+    //   }
+    // } catch (err) {
+    //   return {
+    //     message: err,
+    //     responseStatus: 403,
+    //   };
+    // }
+
     try {
-      let resp = await this.Model.findOne({ email: userDetails.email });
-      if (resp) {
-        // let hashedPassword = await bcrypt.hash(password, 8);
-        // userDetails.password = hashedPassword;
-        userDetails.category = userDetails.category || 0;
-        const newUser = new this.Model(userDetails);
-        let user = await newUser.save();
-        // const token = jwt.sign({ _id: user._id }, jwt_secret);
-        // await emailService.sendSignUpDetails(user.email, token);
-        return {
-          payload: { user },
-        };
-      } else {
+      // 1. Prepare the Update Object and find the existing user by email
+      const existingUser = await this.Model.findOne({ email: userDetails.email });
+
+      if (!existingUser) {
         return {
           message: "User not Found",
-          responseStatus: 403,
+          responseStatus: 404, // Use 404 for not found
         };
       }
-    } catch (err) {
+
+      if (existingUser.googleId && !userDetails.password) {
+        // User is a Google user AND the update payload didn't provide a new password.
+        // DELETE the password field from the update payload to prevent Mongoose from trying to validate or save 'null'.
+        delete userDetails.password;
+      }
+
+      const updatedUser = await this.Model.findOneAndUpdate(
+        { email: userDetails.email }, // Query to find the user
+        userDetails,                  // The data to update (after cleaning 'password')
+        { new: true, runValidators: true } // Return updated document and run schema validators
+      );
+
+      // Remove sensitive data before sending back
+      updatedUser.password = null;
+
       return {
-        message: err,
-        responseStatus: 403,
+        payload: { user: updatedUser },
+      };
+
+    } catch (error) {
+      // Handle validation errors (e.g., trying to set a non-enum category) or server errors
+      console.error("User update error:", error);
+      return {
+        message: "Update failed",
+        responseStatus: 500,
+        error: error.message
       };
     }
   }
