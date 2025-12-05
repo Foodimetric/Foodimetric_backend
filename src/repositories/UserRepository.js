@@ -83,7 +83,7 @@ class UserRepository {
     // let password = userDetails.password;
     try {
       let resp = await this.Model.findOne({ email: userDetails.email });
-      if (!resp) {
+      if (resp) {
         // let hashedPassword = await bcrypt.hash(password, 8);
         // userDetails.password = hashedPassword;
         userDetails.category = userDetails.category || 0;
@@ -96,7 +96,7 @@ class UserRepository {
         };
       } else {
         return {
-          message: "This Email or Username has been used",
+          message: "User not Found",
           responseStatus: 403,
         };
       }
