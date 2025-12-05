@@ -104,7 +104,7 @@ connection.once('open', async () => {
   // await creditUsers();
   // await seedPrompts();
   // await verifyGoogleUsers()
-  await seedResources();
+  // await seedResources();
   console.log('Database running Successfully')
 })
 

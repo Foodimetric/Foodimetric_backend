@@ -80,17 +80,17 @@ class UserRepository {
   }
 
   async signUp(userDetails) {
-    let password = userDetails.password;
+    // let password = userDetails.password;
     try {
       let resp = await this.Model.findOne({ email: userDetails.email });
       if (!resp) {
-        let hashedPassword = await bcrypt.hash(password, 8);
-        userDetails.password = hashedPassword;
+        // let hashedPassword = await bcrypt.hash(password, 8);
+        // userDetails.password = hashedPassword;
         userDetails.category = userDetails.category || 0;
         const newUser = new this.Model(userDetails);
         let user = await newUser.save();
-        const token = jwt.sign({ _id: user._id }, jwt_secret);
-        await emailService.sendSignUpDetails(user.email, token);
+        // const token = jwt.sign({ _id: user._id }, jwt_secret);
+        // await emailService.sendSignUpDetails(user.email, token);
         return {
           payload: { user },
         };
