@@ -8,6 +8,7 @@ const { createServer } = require("http");
 const axios = require("axios");
 require("dotenv").config()
 const userRoute = require("./src/routes/user-routes");
+const resourceRoute = require("./src/routes/resource-routes");
 const payRoute = require("./src/routes/payment-routes");
 const chatRoute = require("./src/routes/chatBot-routes");
 const adminRoute = require("./src/routes/admin-routes");
@@ -17,6 +18,7 @@ const Message = require("./src/models/message");
 const calculationsRoutes = require("./src/routes/calculation");
 const diaryRoutes = require("./src/routes/diary");
 const { addDataToDB } = require('./read_json');
+const { seedResources } = require('./resources')
 const { seedPrompts } = require('./prompt_seed');
 const { addWestAfricaFoodDataToDB } = require('./west_json');
 const { verifyGoogleUsers } = require('./google_users');
@@ -102,6 +104,7 @@ connection.once('open', async () => {
   // await creditUsers();
   // await seedPrompts();
   // await verifyGoogleUsers()
+  await seedResources();
   console.log('Database running Successfully')
 })
 
@@ -122,6 +125,7 @@ setInterval(async () => {
 app.use('/uploads', express.static(path.join(__dirname, 'src/routes/uploads')));
 
 app.use("/users", userRoute)
+app.use("/resource", resourceRoute)
 app.use("/admin", adminRoute)
 app.use("/prompt", promptRoute)
 app.use("/foods", foodRoute)
