@@ -14,4 +14,4 @@ route.post("/admin/resources", ResourceController.create);
 route.put("/admin/resources/:id", ResourceController.update);
 route.delete("/admin/resources/:id", ResourceController.delete);
 
-module.exports = route;
+module.exports = route; 
