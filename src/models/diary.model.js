@@ -1,6 +1,22 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const foodItemSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+    },
+    quantityUnit: {
+        type: String,
+        required: true,
+        trim: true,
+    }
+})
 // Define the Diary schema
 const diarySchema = new Schema({
     user_id: {
@@ -11,12 +27,13 @@ const diarySchema = new Schema({
     date: { type: Date, required: true, default: Date.now }, // Automatically captures the current date
     time: { type: String, required: true }, // Time in HH:MM format
     foodEaten: { type: String, required: true }, // Food name
-    quantity: { type: String, required: true }, // Quantity in grams, ml, or units
-    quantityUnit: { type: String, required: true }, // Quantity in grams, ml, or units
+    quantity: { type: String }, // Quantity in grams, ml, or units
+    quantityUnit: { type: String }, // Quantity in grams, ml, or units
     mealType: { type: String, required: true }, // Quantity in grams, ml, or units
     location: { type: String, required: true }, // Quantity in grams, ml, or units
     portionSize: { type: String, required: true }, // Quantity in grams, ml, or units
     tags: { type: [String], default: [], required: true },
+    foodItems: { type: [foodItemSchema], default: [], required: true },
     additionalInfo: { type: String }, // Optional field for any additional notes
     imageUrl: { type: String },
     timestamp: {
