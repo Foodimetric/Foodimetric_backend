@@ -4,16 +4,16 @@ const Schema = mongoose.Schema;
 const foodItemSchema = new Schema({
     name: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
     },
     quantity: {
         type: Number,
-        required: true,
+        // required: true,
     },
     quantityUnit: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
     }
 })
@@ -29,11 +29,11 @@ const diarySchema = new Schema({
     foodEaten: { type: String, required: true }, // Food name
     quantity: { type: String }, // Quantity in grams, ml, or units
     quantityUnit: { type: String }, // Quantity in grams, ml, or units
-    mealType: { type: String, required: true }, // Quantity in grams, ml, or units
-    location: { type: String, required: true }, // Quantity in grams, ml, or units
-    portionSize: { type: String, required: true }, // Quantity in grams, ml, or units
-    tags: { type: [String], default: [], required: true },
-    foodItems: { type: [foodItemSchema], default: [], required: true },
+    mealType: { type: String }, // Quantity in grams, ml, or units
+    location: { type: String }, // Quantity in grams, ml, or units
+    portionSize: { type: String }, // Quantity in grams, ml, or units
+    tags: { type: [String], default: [] },
+    foodItems: { type: [foodItemSchema], default: [] },
     additionalInfo: { type: String }, // Optional field for any additional notes
     imageUrl: { type: String },
     timestamp: {
