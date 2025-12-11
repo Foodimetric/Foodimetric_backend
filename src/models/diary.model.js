@@ -12,6 +12,11 @@ const diarySchema = new Schema({
     time: { type: String, required: true }, // Time in HH:MM format
     foodEaten: { type: String, required: true }, // Food name
     quantity: { type: String, required: true }, // Quantity in grams, ml, or units
+    quantityUnit: { type: String, required: true }, // Quantity in grams, ml, or units
+    mealType: { type: String, required: true }, // Quantity in grams, ml, or units
+    location: { type: String, required: true }, // Quantity in grams, ml, or units
+    portionSize: { type: String, required: true }, // Quantity in grams, ml, or units
+    tags: { type: [String], default: [], required: true },
     additionalInfo: { type: String }, // Optional field for any additional notes
     imageUrl: { type: String },
     timestamp: {
