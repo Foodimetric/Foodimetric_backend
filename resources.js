@@ -201,7 +201,7 @@ const seedResources = async () => {
     try {
         for (const resource of allResources) {
             await Resource.updateOne(
-                { id: resource.id }, // Look for this ID
+                { title: resource.title }, // Look for this ID
                 { 
                     $setOnInsert: { likes: 0 }, // ONLY set likes to 0 if it's a brand new document
                     $set: {
