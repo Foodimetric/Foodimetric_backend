@@ -33,6 +33,25 @@ const userModel = new Schema({
         enum: ["active", "suspended"],
         default: "active"
     },
+    isPremium: {
+        type: Boolean,
+        default: false
+    },
+    subscriptionPlan: {
+        type: String,
+        enum: ['free', 'monthly', 'yearly'],
+        default: 'free'
+    },
+    paystackCustomerCode: {
+        type: String
+    }, // Helps you identify them in the Paystack dashboard
+    subscriptionExpiry: {
+        type: Date
+    },
+    paymentHistory: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Payment'
+    }],
     partner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
