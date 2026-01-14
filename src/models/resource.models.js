@@ -12,6 +12,9 @@ const ResourceSchema = new Schema({
     date: { type: String, required: true },
     description: { type: String },
     author: { type: String },
+    slug: { type: String },
+    slug: { type: String },
+
     likes: { type: Number, default: 0 },
     summary: { type: String },
     content: { type: String },
