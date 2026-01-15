@@ -52,6 +52,31 @@ class ResourceController {
         }
     }
 
+    // ✅ GET one resource by id
+    async getById(req, res) {
+        try {
+            const { id } = req.params;
+
+            // Validate ObjectId so bad ids don't throw a cast error
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ message: "Invalid resource id" });
+            }
+
+            const resource = await Resource.findById(id);
+
+            if (!resource) {
+                return res.status(404).json({ message: "Resource not found" });
+            }
+
+            return res.status(200).json({
+                message: "Resource fetched successfully",
+                data: resource,
+            });
+        } catch (error) {
+            return res.status(500).json({ message: "Server error", error });
+        }
+    }
+
     // CREATE (Admin)
     async create(req, res) {
         try {

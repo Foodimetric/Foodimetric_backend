@@ -6,6 +6,7 @@ const resourceController = new ResourceController()
 // Public
 route.get("/resources", resourceController.getAll);
 route.get("/resources/category/:category", resourceController.getByCategory);
+route.get("/resources/:id", resourceController.getById);
 
 // Likes
 route.post("/resources/:id/like", resourceController.like);
