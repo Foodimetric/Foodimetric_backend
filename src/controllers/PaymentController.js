@@ -1,5 +1,6 @@
 const User = require("../models/user.models")
 const axios = require('axios');
+const crypto = require('crypto');
 const Payment = require("../models/payment.model")
 const paystack = require('paystack-api');
 const paystackSecret = 'YOUR_SECRET_KEY';  // Replace with your secret key
