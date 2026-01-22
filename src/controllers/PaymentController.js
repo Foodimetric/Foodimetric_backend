@@ -49,7 +49,7 @@ class PaymentController {
                 }
 
                 // Mark user subscription as Premium immediately
-                await User.findOneAndUpdate({ email }, { subscriptionStatus: plan});
+                await User.findOneAndUpdate({ email }, { subscriptionStatus: plan });
 
                 return res.json({
                     status: 'success',
@@ -123,7 +123,7 @@ class PaymentController {
 
             // Return the authorization URL to the frontend
             return res.status(200).json(response.data.data);
-            
+
         } catch (error) {
             console.error('Initialization Error:', error.response ? error.response.data : error.message);
             res.status(500).json({ message: "Could not initialize payment" });
@@ -136,6 +136,14 @@ class PaymentController {
             .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
             .update(JSON.stringify(req.body))
             .digest('hex');
+
+        const isValid = crypto.timingSafeEqual(
+            Buffer.from(hash),
+            Buffer.from(signature)
+        );
+
+        console.log("Paystack Webhook Verified:", isValid);
+
         return hash === signature;
     }
 
@@ -144,23 +152,37 @@ class PaymentController {
         const { reference, customer, metadata, amount } = data;
 
         // Create the payment record first (the audit trail)
-        await Payment.create({
-            userId: metadata.user_id, // We'll pass this when initializing payment
-            email: customer.email,
-            amount: amount / 100, // Convert kobo to Naira
-            reference: reference,
-            status: 'success',
-            paidAt: new Date()
-        });
+        const updatedPayment = await Payment.findOneAndUpdate(
+            { reference: reference }, // Look for the record created during initialization
+            {
+                status: 'success',
+                paidAt: new Date(),
+                // Ensure amount matches (security check)
+                amount: amount / 100
+            },
+            { new: true }
+        );
 
+        if (!updatedPayment) {
+            // This handles cases where the webhook arrives but the 
+            // initial record wasn't created (rare, but possible)
+            await Payment.create({
+                userId: metadata.user_id,
+                email: customer.email,
+                amount: amount / 100,
+                reference: reference,
+                status: 'success',
+                paidAt: new Date()
+            });
+        }
         // Update the User
         // Find by ID (stored in metadata) or email
         return await User.findByIdAndUpdate(
-            metadata.user_id, 
-            { 
+            metadata.user_id,
+            {
                 subscriptionStatus: 'Premium',
                 isPremium: true,
-                $push: { paymentHistory: reference } 
+                $push: { paymentHistory: reference }
             },
             { new: true }
         );
@@ -172,7 +194,7 @@ class PaymentController {
         }
 
         const event = req.body;
-
+        console.log("Paystack Webhook event status:", event);
         if (event.event === 'charge.success') {
             try {
                 await this.handleSuccessfulPayment(event.data);
