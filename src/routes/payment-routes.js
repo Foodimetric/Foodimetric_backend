@@ -6,7 +6,7 @@ const route = require("express").Router();
 
 const paymentController = new PaymentController()
 route.post('/paystack/prepare-payment', requireLogin, paymentController.prepare)
-route.post('/paystack/initialize', paymentController.initialize)
+route.post('/paystack/initialize',requireLogin, paymentController.initialize)
 
 route.post('/paystack/webhook', paymentController.verify);
 route.post('/verify-promo', paymentController.verifyPromo);
