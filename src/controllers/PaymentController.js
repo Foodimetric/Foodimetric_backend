@@ -180,11 +180,20 @@ class PaymentController {
         return await User.findByIdAndUpdate(
             metadata.user_id,
             {
+                // 1. Update basic fields
                 subscriptionStatus: 'Premium',
                 isPremium: true,
-                $push: { paymentHistory: reference }
+
+                // 2. Increment the credits by 1000
+                $inc: { credits: 1000 },
+
+                // 3. Add to history (using $addToSet to prevent duplicates)
+                $addToSet: { paymentHistory: reference }
             },
-            { new: true }
+            {
+                new: true,
+                runValidators: true // Ensures 'min: 0' logic is respected
+            }
         );
     }
 
