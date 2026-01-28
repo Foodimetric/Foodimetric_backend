@@ -89,11 +89,32 @@ class PaymentController {
 
     async initialize(req, res) {
         try {
-            const { email, amount, planType } = req.body;
-            const userId = req.user._id; // Assuming you have auth middleware
+            const { email, amount, planType } = req.body; // 'amount' is what you want to receive (Naira)
+            const userId = req.user._id;
 
-            // Paystack expects amount in KOBO (multiply Naira by 100)
-            const amountInKobo = amount * 100;
+            // 1. Calculate Paystack Charges
+            const calculatePaystackFee = (targetAmountNaira) => {
+                const percentage = 0.015; // 1.5%
+                const flatFee = 100;
+                const cap = 2000;
+                const threshold = 2500;
+
+                let charge;
+                if (targetAmountNaira < threshold) {
+                    // Formula: (amount) / (1 - 0.015)
+                    charge = (targetAmountNaira) / (1 - percentage) - targetAmountNaira;
+                } else {
+                    // Formula: (amount + 100) / (1 - 0.015)
+                    charge = (targetAmountNaira + flatFee) / (1 - percentage) - targetAmountNaira;
+                }
+
+                // Paystack fee is capped at ₦2000
+                return Math.min(Math.ceil(charge), cap);
+            };
+
+            const fee = calculatePaystackFee(amount);
+            const totalAmountNaira = amount + fee;
+            const amountInKobo = Math.round(totalAmountNaira * 100);
 
             const response = await axios.post(
                 'https://api.paystack.co/transaction/initialize',
@@ -102,7 +123,9 @@ class PaymentController {
                     amount: amountInKobo,
                     metadata: {
                         user_id: userId,
-                        plan: planType
+                        plan: planType,
+                        original_amount: amount,
+                        paystack_fee: fee
                     }
                 },
                 {
@@ -113,16 +136,16 @@ class PaymentController {
                 }
             );
 
-            // Create a pending payment record in your DB
+            // 2. Create record with the total amount charged
             await Payment.create({
                 userId: userId,
                 email: email,
-                amount: amount,
+                amount: totalAmountNaira, // Store the total actually charged
+                baseAmount: amount,       // Store what you actually earned
                 reference: response.data.data.reference,
                 status: 'pending'
             });
 
-            // Return the authorization URL to the frontend
             return res.status(200).json(response.data.data);
 
         } catch (error) {

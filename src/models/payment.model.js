@@ -15,6 +15,10 @@ const paymentModel = new Schema({
         type: Number, 
         required: true 
     }, // Store in kobo/cents (e.g., 5000 for ₦50.00)
+    baseAmount: { 
+        type: Number, 
+        required: true 
+    }, // The amount the user actually paid (before Paystack fees)
     reference: { 
         type: String, 
         required: true, 
